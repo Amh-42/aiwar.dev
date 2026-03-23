@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Anwar Misbah | KINETIC_OS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-surface-variant": "#c1c6d7",
+              "on-secondary-container": "#9eb8f5",
+              "secondary-fixed-dim": "#aec6ff",
+              "tertiary-fixed-dim": "#ffb596",
+              "outline": "#8b90a0",
+              "surface-variant": "#353535",
+              "background": "#131313",
+              "surface-container-highest": "#353535",
+              "on-error": "#690005",
+              "surface-bright": "#393939",
+              "on-tertiary": "#581e00",
+              "on-tertiary-fixed": "#360f00",
+              "tertiary": "#ffb596",
+              "primary-fixed": "#d8e2ff",
+              "on-error-container": "#ffdad6",
+              "outline-variant": "#414754",
+              "tertiary-container": "#ca4e00",
+              "on-primary-container": "#ffffff",
+              "on-secondary": "#0e2f63",
+              "error": "#ffb4ab",
+              "primary-container": "#0070f3",
+              "on-primary-fixed": "#001a43",
+              "surface-container-low": "#1b1b1b",
+              "surface-container-high": "#2a2a2a",
+              "on-background": "#e2e2e2",
+              "tertiary-fixed": "#ffdbcd",
+              "surface-container": "#1f1f1f",
+              "primary-fixed-dim": "#aec6ff",
+              "surface-tint": "#aec6ff",
+              "surface": "#131313",
+              "on-secondary-fixed": "#001a43",
+              "error-container": "#93000a",
+              "secondary-fixed": "#d8e2ff",
+              "surface-container-lowest": "#0e0e0e",
+              "on-secondary-fixed-variant": "#2a467b",
+              "inverse-primary": "#0059c5",
+              "on-primary-fixed-variant": "#004397",
+              "primary": "#aec6ff",
+              "secondary-container": "#2d487d",
+              "on-tertiary-fixed-variant": "#7d2d00",
+              "on-primary": "#002e6b",
+              "on-tertiary-container": "#fffeff",
+              "inverse-on-surface": "#303030",
+              "secondary": "#aec6ff",
+              "on-surface": "#e2e2e2",
+              "surface-dim": "#131313",
+              "inverse-surface": "#e2e2e2"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0px", "lg": "0px", "xl": "0px", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #000000;
+            color: #e2e2e2;
+            font-family: 'Inter', sans-serif;
+        }
+        .kinetic-glow:hover {
+            box-shadow: 0 0 20px rgba(0, 112, 243, 0.4);
+        }
+        .terminal-cursor::after {
+            content: '|';
+            animation: blink 1s infinite;
+            color: #0070f3;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    </style>
+</head>
+<body class="selection:bg-primary-container selection:text-white">
+<!-- TopAppBar Navigation Shell -->
+<nav class="fixed top-0 z-50 w-full px-6 py-4 flex justify-between items-center bg-black/80 backdrop-blur-xl border-b border-[#0070F3]/20">
+<div class="text-xl font-bold tracking-tighter text-white font-headline">KINETIC_OS</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-gray-400 hover:text-white transition-colors font-body text-sm" href="#">About</a>
+<a class="text-gray-400 hover:text-white transition-colors font-body text-sm" href="#">Ventures</a>
+<a class="text-gray-400 hover:text-white transition-colors font-body text-sm" href="#">Work</a>
+<a class="text-gray-400 hover:text-white transition-colors font-body text-sm" href="#">Stack</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-[#0070F3] hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+</button>
+</div>
+</nav>
+<main class="pt-24 min-h-screen">
+<!-- Hero Section: Sovereign Identity -->
+<section class="px-6 md:px-12 py-20 flex flex-col items-start max-w-7xl mx-auto">
+<div class="flex flex-col gap-2 mb-8">
+<span class="text-primary text-[10px] uppercase tracking-[0.3em] font-label font-bold">Principal Architect &amp; Content Engineer</span>
+<h1 class="text-6xl md:text-9xl font-headline font-bold tracking-tighter leading-[0.85] text-white">
+                    ANWAR<br/>MISBAH
+                </h1>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12 w-full mt-12 border-t border-outline-variant/30 pt-12">
+<div class="max-w-md">
+<p class="text-on-surface-variant font-body text-lg leading-relaxed">
+                        Impacting global education through content &amp; tech. Building the future of autonomous systems and creative synthesis.
+                    </p>
+</div>
+<div class="flex flex-col justify-end items-start md:items-end gap-4">
+<div class="flex flex-col items-start md:items-end">
+<span class="text-primary font-label text-[10px] uppercase tracking-widest">Portfolio</span>
+<a class="text-white font-headline text-2xl hover:text-primary transition-colors" href="https://aiwar.dev">aiwar.dev</a>
+</div>
+<div class="flex flex-col items-start md:items-end">
+<span class="text-primary font-label text-[10px] uppercase tracking-widest">Creator</span>
+<span class="text-white font-headline text-2xl">@anipreneur</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Ventures Bento Grid -->
+<section class="px-6 md:px-12 py-20 max-w-7xl mx-auto">
+<div class="flex items-center justify-between mb-12">
+<h2 class="font-headline text-3xl font-bold tracking-tighter text-white">CORE_VENTURES</h2>
+<span class="text-outline text-[10px] uppercase tracking-widest">[ 04 ACTIVE NODES ]</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 border border-outline-variant/20">
+<!-- Venture 1: InlinkAI -->
+<div class="group relative aspect-square bg-surface-container-low border border-outline-variant/20 p-8 flex flex-col justify-between hover:bg-surface-container transition-all duration-500 overflow-hidden">
+<div class="z-10">
+<span class="text-primary font-label text-[10px] tracking-widest">01</span>
+<h3 class="text-white font-headline text-2xl mt-2">InlinkAI</h3>
+</div>
+<div class="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity">
+<img alt="" class="w-full h-full object-cover" data-alt="Abstract blue neural network node visualization" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrbGamdzVbK0_WlTpWOnUMNvzZLa_TWjwudrPSQrJYAOaoZv2OEylX34GUBR_5xclb13CVwGy_RHW5lMv7nwjUxVPECtv3mPX8-jEdW-FEVSZRAv2wPdVQ2xqS52MJJ3UeG9QzlQBLxn8TjV0Dmrk6Bjr-Nwhf377_vSsMuWRge3HPDnlOO0LbmL-SwiasM818LQ7c6_wn0_TKDxoeaUfjDuEnQIhu2U5s8hzRLb1QmYzGQuBTneLPHntsI5b18oSbVbsQjKVA-A"/>
+</div>
+<div class="z-10 mt-auto">
+<p class="text-on-surface-variant text-sm font-body mb-6">Autonomous LinkedIn lead generation and content scaling.</p>
+<span class="material-symbols-outlined text-primary group-hover:translate-x-2 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</div>
+<div class="absolute top-0 left-0 w-1 h-0 bg-primary-container group-hover:h-full transition-all duration-300"></div>
+</div>
+<!-- Venture 2: Chapa -->
+<div class="group relative aspect-square bg-surface-container-low border border-outline-variant/20 p-8 flex flex-col justify-between hover:bg-surface-container transition-all duration-500 overflow-hidden">
+<div class="z-10">
+<span class="text-primary font-label text-[10px] tracking-widest">02</span>
+<h3 class="text-white font-headline text-2xl mt-2">Chapa</h3>
+</div>
+<div class="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity">
+<img alt="" class="w-full h-full object-cover" data-alt="High-tech glowing circuit board surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_jTnPxeuuxE3s24yQf4a666aKi9LB_nD0Ong0URlxRmwv8VQygu2DaPhTB03PYIAti2OQy9wg_-KojbVbewcVcVXSoteYsNR4Mwo_SfjoAESjqjWVLI1Dsjgr0Dw18-avTqWwTSlNgcYVmU7wogB2fNz98hq0GNuzg_2zapl_nl9mDgX0PDutwdvKyMpteHuDj4uAdL2LwhPKg-SUk-xi3ILj__OgAgfTOrDolf4RDcPlFX_Dx7OFtAPOl6uyeWiY9aujQb-wLA"/>
+</div>
+<div class="z-10 mt-auto">
+<p class="text-on-surface-variant text-sm font-body mb-6">Fintech infrastructure for modern pan-African digital economies.</p>
+<span class="material-symbols-outlined text-primary group-hover:translate-x-2 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</div>
+<div class="absolute top-0 left-0 w-1 h-0 bg-primary-container group-hover:h-full transition-all duration-300"></div>
+</div>
+<!-- Venture 3: Synheart.ai -->
+<div class="group relative aspect-square bg-surface-container-low border border-outline-variant/20 p-8 flex flex-col justify-between hover:bg-surface-container transition-all duration-500 overflow-hidden">
+<div class="z-10">
+<span class="text-primary font-label text-[10px] tracking-widest">03</span>
+<h3 class="text-white font-headline text-2xl mt-2">Synheart.ai</h3>
+</div>
+<div class="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity">
+<img alt="" class="w-full h-full object-cover" data-alt="Abstract flowing white and blue data streams" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHt1YsYwR2wOMctnUq_6hankcJyGDuwcVwXOOuhJ1eaSI91pF5BaJMfCMV6VQDQcn4Nn6-uki1E9yj-odjWv9ZfzeuGAS3D5UyZWgThWdAUYGIxrKFC575Hz6hdQgBitNS5K1jHbTxj6xTJ9SwAoF9wwqgYhPLoK2SsHavXS1NN_UW-IJ8C52gLR3Ycj2LbgQrg3sb1TPm038KYEsw40o__DNtnZA3i88dSJ0F-_J_nOcwpjMTcH4N4q1ogWWVJWYZfna0d7JTJA"/>
+</div>
+<div class="z-10 mt-auto">
+<p class="text-on-surface-variant text-sm font-body mb-6">Synthetic cardiovascular data modeling for predictive health.</p>
+<span class="material-symbols-outlined text-primary group-hover:translate-x-2 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</div>
+<div class="absolute top-0 left-0 w-1 h-0 bg-primary-container group-hover:h-full transition-all duration-300"></div>
+</div>
+<!-- Venture 4: Anipreneur -->
+<div class="group relative aspect-square bg-surface-container-low border border-outline-variant/20 p-8 flex flex-col justify-between hover:bg-surface-container transition-all duration-500 overflow-hidden">
+<div class="z-10">
+<span class="text-primary font-label text-[10px] tracking-widest">04</span>
+<h3 class="text-white font-headline text-2xl mt-2">Anipreneur</h3>
+</div>
+<div class="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity">
+<img alt="" class="w-full h-full object-cover" data-alt="Close up of a computer microchip" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVysXEwBlPkP_Nn-rdyijum9JkpZp6Rk2mC3GtW0Vubl6TEK_2cb8Ybc3dYZOcNShEvL4Jk2wWda4CGnIiCnLtgIZjlNEHCvjhftkDUNMdLbNBKo2_ty-gQJehaYczkJXxTPfSzxPzuiLcIYpRFiE4II382oo6Y-MnlqMdQEjdv_0Z21x4O1rFS44Ge5FkaF733k2HbwmaZYh_9WiwcZe1sZf9spaAfrWj7pWVW9rjKff_beL4xV-FZblNJF3AF6tvE_2uCCGQFg"/>
+</div>
+<div class="z-10 mt-auto">
+<p class="text-on-surface-variant text-sm font-body mb-6">Educational content ecosystem for the next-gen creator.</p>
+<span class="material-symbols-outlined text-primary group-hover:translate-x-2 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</div>
+<div class="absolute top-0 left-0 w-1 h-0 bg-primary-container group-hover:h-full transition-all duration-300"></div>
+</div>
+</div>
+</section>
+<!-- The Stack: Discrete Technical Section -->
+<section class="px-6 md:px-12 py-20 bg-surface-container-lowest">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row gap-20">
+<div class="md:w-1/3">
+<h2 class="font-headline text-3xl font-bold tracking-tighter text-white mb-6">THE_STACK</h2>
+<p class="text-on-surface-variant font-body text-sm leading-relaxed max-w-xs">
+                        The surgical tools used to engineer high-impact solutions across software and media domains.
+                    </p>
+</div>
+<div class="md:w-2/3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-y-12 gap-x-8">
+<div class="flex flex-col gap-2">
+<span class="text-outline text-[10px] font-label uppercase tracking-widest">Language</span>
+<span class="text-white font-body font-medium">Python</span>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-outline text-[10px] font-label uppercase tracking-widest">Language</span>
+<span class="text-white font-body font-medium">Go</span>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-outline text-[10px] font-label uppercase tracking-widest">Content</span>
+<span class="text-white font-body font-medium">Premiere Pro</span>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-outline text-[10px] font-label uppercase tracking-widest">Infra</span>
+<span class="text-white font-body font-medium">AWS / Cloud</span>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-outline text-[10px] font-label uppercase tracking-widest">Design</span>
+<span class="text-white font-body font-medium">Figma</span>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-outline text-[10px] font-label uppercase tracking-widest">AI</span>
+<span class="text-white font-body font-medium">PyTorch</span>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-outline text-[10px] font-label uppercase tracking-widest">Backend</span>
+<span class="text-white font-body font-medium">PostgreSQL</span>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-outline text-[10px] font-label uppercase tracking-widest">Control</span>
+<span class="text-white font-body font-medium">Git / SSH</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Awards: Technical Log -->
+<section class="px-6 md:px-12 py-20 max-w-7xl mx-auto">
+<div class="border-l border-[#0070F3] pl-8">
+<h2 class="font-headline text-3xl font-bold tracking-tighter text-white mb-12">AWARD_LOGS</h2>
+<div class="flex flex-col gap-0">
+<!-- Log Item 1 -->
+<div class="group flex flex-col md:flex-row md:items-center justify-between py-6 border-b border-outline-variant/20 hover:bg-surface-container transition-colors px-4">
+<div class="flex items-center gap-6">
+<span class="text-outline font-label text-[10px]">2024.08.12</span>
+<span class="text-white font-headline text-lg uppercase tracking-tight">Global EdTech Innovation Summit</span>
+</div>
+<div class="mt-2 md:mt-0 flex items-center gap-4">
+<span class="text-primary font-label text-[10px] px-2 py-1 border border-primary/30 uppercase">Gold Medalist</span>
+<span class="material-symbols-outlined text-outline text-sm" data-icon="check_circle">check_circle</span>
+</div>
+</div>
+<!-- Log Item 2 -->
+<div class="group flex flex-col md:flex-row md:items-center justify-between py-6 border-b border-outline-variant/20 hover:bg-surface-container transition-colors px-4">
+<div class="flex items-center gap-6">
+<span class="text-outline font-label text-[10px]">2023.11.04</span>
+<span class="text-white font-headline text-lg uppercase tracking-tight">Venture Pioneer Africa</span>
+</div>
+<div class="mt-2 md:mt-0 flex items-center gap-4">
+<span class="text-primary font-label text-[10px] px-2 py-1 border border-primary/30 uppercase">Top 10 Finalist</span>
+<span class="material-symbols-outlined text-outline text-sm" data-icon="check_circle">check_circle</span>
+</div>
+</div>
+<!-- Log Item 3 -->
+<div class="group flex flex-col md:flex-row md:items-center justify-between py-6 border-b border-outline-variant/20 hover:bg-surface-container transition-colors px-4">
+<div class="flex items-center gap-6">
+<span class="text-outline font-label text-[10px]">2023.05.20</span>
+<span class="text-white font-headline text-lg uppercase tracking-tight">Open Source Architect Award</span>
+</div>
+<div class="mt-2 md:mt-0 flex items-center gap-4">
+<span class="text-primary font-label text-[10px] px-2 py-1 border border-primary/30 uppercase">Honorable Mention</span>
+<span class="material-symbols-outlined text-outline text-sm" data-icon="check_circle">check_circle</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Shell -->
+<footer class="bg-black py-12 border-t border-[#1B1B1B] w-full mt-20">
+<div class="flex flex-col md:flex-row justify-between items-center px-10 w-full gap-8">
+<div class="flex flex-col items-center md:items-start gap-2">
+<span class="text-sm font-headline text-white font-bold">KINETIC_OS</span>
+<span class="font-body text-[10px] uppercase tracking-widest text-gray-600">© 2024 Anwar Misbah. KINETIC_OS V1.0</span>
+</div>
+<div class="flex gap-12">
+<a class="text-gray-600 hover:text-[#0070F3] transition-colors font-body text-[10px] uppercase tracking-widest" href="#">X</a>
+<a class="text-gray-600 hover:text-[#0070F3] transition-colors font-body text-[10px] uppercase tracking-widest" href="#">GitHub</a>
+<a class="text-gray-600 hover:text-[#0070F3] transition-colors font-body text-[10px] uppercase tracking-widest" href="#">LinkedIn</a>
+</div>
+<div class="text-[10px] text-gray-600 font-label uppercase tracking-widest terminal-cursor">
+                System Status: Nominal
+            </div>
+</div>
+</footer>
+</body></html>
