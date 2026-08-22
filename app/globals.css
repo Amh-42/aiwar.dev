@@ -556,6 +556,17 @@ a:hover {
   margin: 0 0 0.35rem;
 }
 
+/* Card titles that point somewhere read as links without the default underline
+   fighting the handwriting. */
+.card h3 a {
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+}
+
+.card h3 a:hover {
+  border-bottom-color: var(--thread);
+}
+
 .card p {
   font-family: var(--f-note), cursive;
   font-size: 0.98rem;

@@ -57,9 +57,25 @@ const VENTURES = [
 ];
 
 const SIDE = [
-  { title: 'aiwar.dev', body: 'A bot that reads AI news so I do not have to, summarises it, and posts it. Named before I had a website.' },
-  { title: 'fact.et / forbes.et', body: 'Two Ethiopian business publications. Editorial systems, not just a blog with a nice header.' },
-  { title: 'a second brain', body: 'A wiki that documents itself. Every session writes what changed. Slightly cursed, extremely useful.' },
+  {
+    title: 'aiwar.dev',
+    href: 'https://t.me/aiwar_dev',
+    body: 'A bot that reads AI news so I do not have to, summarises it, and posts it. Named before I had a website.',
+  },
+  {
+    title: 'fact.et',
+    href: 'https://fact.et',
+    body: 'Ethiopian news, built as an editorial system rather than a blog with a nice header. Sanity behind it, so the newsroom writes without touching code.',
+  },
+  {
+    title: 'forbes.et',
+    href: 'https://forbes.et',
+    body: 'Ethiopian business, entrepreneurship and innovation. Same engine as fact.et, different masthead and a slower, longer register.',
+  },
+  {
+    title: 'a second brain',
+    body: 'A wiki that documents itself. Every session writes what changed. Slightly cursed, extremely useful.',
+  },
 ];
 
 export default async function Page() {
@@ -223,8 +239,26 @@ export default async function Page() {
             {SIDE.map((s) => (
               <article className="card rise" key={s.title}>
                 <span className="tape" aria-hidden="true" />
-                <h3>{s.title}</h3>
+                <h3>
+                  {s.href ? (
+                    <a href={s.href} target="_blank" rel="noopener noreferrer">
+                      {s.title}
+                    </a>
+                  ) : (
+                    s.title
+                  )}
+                </h3>
                 <p>{s.body}</p>
+                {s.href ? (
+                  <a
+                    className="card-more"
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Visit {s.title} →
+                  </a>
+                ) : null}
               </article>
             ))}
           </div>
