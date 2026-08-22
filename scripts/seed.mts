@@ -207,6 +207,9 @@ const ISSUES = [
 ];
 
 async function main() {
+  // NOTE: createIfNotExists inside a transaction normalises a `drafts.` id to
+  // its published form, which published the seed content instead of drafting
+  // it. client.create* outside a transaction keeps the prefix.
   const tx = writeClient.transaction();
 
   for (const t of TOPICS) {
@@ -219,8 +222,10 @@ async function main() {
     });
   }
 
+  await tx.commit();
+
   for (const post of POSTS) {
-    tx.createIfNotExists({
+    await writeClient.createIfNotExists({
       _id: `drafts.${post._id}`,
       _type: "post",
       title: post.title,
@@ -234,7 +239,7 @@ async function main() {
   }
 
   for (const issue of ISSUES) {
-    tx.createIfNotExists({
+    await writeClient.createIfNotExists({
       _id: `drafts.${issue._id}`,
       _type: "issue",
       number: issue.number,
@@ -246,8 +251,6 @@ async function main() {
       body: issue.body,
     });
   }
-
-  await tx.commit();
 
   console.log(`✓ ${TOPICS.length} topics published`);
   console.log(`✓ ${POSTS.length} blog posts created as drafts`);

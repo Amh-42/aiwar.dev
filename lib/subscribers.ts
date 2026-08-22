@@ -72,26 +72,23 @@ export async function subscribe(emailRaw: string, source = "site"): Promise<Subs
       createdAt: new Date().toISOString(),
     });
     return { ok: true, status: "added", token };
-  } catch {
+  } catch (err) {
+    // Log it — a signup that fails quietly is a subscriber lost for good.
+    console.error("[newsletter] subscribe failed", err);
     return { ok: false, error: "Couldn't sign you up just now. Please try again." };
   }
 }
 
 // Everyone currently subscribed, for sending.
 export async function listSubscribed(): Promise<Subscriber[]> {
-  try {
-    return await fetchQuery<Subscriber[]>(SUBSCRIBED_QUERY);
-  } catch {
-    return [];
-  }
+  // Deliberately NOT swallowed: an empty list and a broken query look identical
+  // to the caller, and "there are no subscribers" is the one lie that silently
+  // stops a newsletter from ever going out.
+  return fetchQuery<Subscriber[]>(SUBSCRIBED_QUERY);
 }
 
 export async function countSubscribed(): Promise<number> {
-  try {
-    return await fetchQuery<number>(COUNT_QUERY);
-  } catch {
-    return 0;
-  }
+  return fetchQuery<number>(COUNT_QUERY);
 }
 
 // Returns the email that was unsubscribed (for a friendly confirmation), or null.
@@ -108,7 +105,8 @@ export async function unsubscribeByToken(token: string): Promise<string | null> 
       .set({ status: "unsubscribed", unsubscribedAt: new Date().toISOString() })
       .commit();
     return row.email;
-  } catch {
+  } catch (err) {
+    console.error("[newsletter] unsubscribe failed", err);
     return null;
   }
 }

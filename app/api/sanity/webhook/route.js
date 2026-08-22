@@ -9,23 +9,60 @@ export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
 /**
- * Sanity publish webhook. Publishing an issue in the Studio is what sends it —
- * there's no second button to remember.
+ * Sanity publish webhook. Publishing an issue in the Studio is what mails it —
+ * there is no second button to remember.
  *
- * Configure in Sanity Manage → API → Webhooks:
- *   URL      https://aiwar.dev/api/sanity/webhook
- *   Trigger  create + update on `issue` and `post`
- *   Secret   SANITY_WEBHOOK_SECRET
- *   Filter   _type == "issue" || _type == "post"
+ * Accepts both payload shapes Sanity can send:
+ *   - transaction hooks  { ids: { created: [], updated: [], deleted: [] } }
+ *   - GROQ hooks         { _id, _type, slug }
+ * The transaction shape carries ids only, so the document is looked up here.
  *
- * Sending is guarded by the issue's own `status` field, so a re-publish (a typo
- * fix, say) republishes the page without mailing the list twice.
+ * Sending is guarded by the issue's own `status`, so re-publishing a typo fix
+ * republishes the page without mailing the list twice.
  */
+
+async function classify(ids) {
+  if (ids.length === 0) return [];
+  return freshClient.fetch(
+    `*[_id in $ids && _type in ["issue", "post"]]{ _id, _type, "slug": slug.current }`,
+    { ids }
+  );
+}
+
+async function handleIssue(id, slug) {
+  revalidatePath('/newsletter');
+  revalidatePath('/');
+  if (slug) revalidatePath(`/newsletter/${slug}`);
+
+  const issue = await freshClient.fetch(unsentIssueByIdQuery, { id });
+  if (!issue) return { id, sent: false, reason: 'already sent' };
+
+  const recipients = await countSubscribed();
+  if (recipients === 0) return { id, sent: false, reason: 'no subscribers' };
+
+  const res = await sendIssue(issue);
+
+  if (res.ok && res.sent > 0) {
+    await writeClient
+      .patch(id)
+      .set({ status: 'sent', sentAt: new Date().toISOString(), recipientCount: res.sent })
+      .commit();
+  }
+
+  return { id, subject: issue.subject, ...res };
+}
+
+function handlePost(slug) {
+  revalidatePath('/blog');
+  revalidatePath('/');
+  if (slug) revalidatePath(`/blog/${slug}`);
+  return { slug, revalidated: true };
+}
+
 export async function POST(request) {
+  const url = new URL(request.url);
   const secret = process.env.SANITY_WEBHOOK_SECRET;
-  const provided =
-    request.headers.get('x-webhook-secret') ||
-    new URL(request.url).searchParams.get('secret');
+  const provided = request.headers.get('x-webhook-secret') || url.searchParams.get('secret');
 
   if (secret && provided !== secret) {
     return Response.json({ ok: false, error: 'bad secret' }, { status: 401 });
@@ -38,52 +75,31 @@ export async function POST(request) {
     return Response.json({ ok: false, error: 'bad payload' }, { status: 400 });
   }
 
-  const { _id, _type } = payload;
+  // Transaction hooks send ids; GROQ hooks send the projected document.
+  const touched = payload.ids
+    ? [...(payload.ids.created || []), ...(payload.ids.updated || [])]
+    : [payload._id].filter(Boolean);
 
-  if (_type === 'post') {
-    revalidatePath('/blog');
-    revalidatePath('/');
-    if (payload.slug?.current) revalidatePath(`/blog/${payload.slug.current}`);
-    return Response.json({ ok: true, revalidated: 'post' });
+  // Drafts carry a `drafts.` prefix — only published documents do anything.
+  const publishedIds = touched.filter((id) => id && !id.startsWith('drafts.'));
+  if (publishedIds.length === 0) {
+    return Response.json({ ok: true, handled: [], reason: 'drafts only' });
   }
 
-  if (_type !== 'issue') {
-    return Response.json({ ok: true, skipped: _type || 'unknown' });
+  const docs = payload._type
+    ? [{ _id: payload._id, _type: payload._type, slug: payload.slug?.current ?? payload.slug }]
+    : await classify(publishedIds);
+
+  const handled = [];
+  for (const doc of docs) {
+    if (doc._type === 'issue') handled.push(await handleIssue(doc._id, doc.slug));
+    else if (doc._type === 'post') handled.push(handlePost(doc.slug));
   }
 
-  // The archive should update whether or not the mail-out succeeds.
-  revalidatePath('/newsletter');
-  revalidatePath('/');
-  if (payload.slug?.current) revalidatePath(`/newsletter/${payload.slug.current}`);
-
-  // Drafts carry a `drafts.` id prefix; only the published doc should send.
-  if (!_id || _id.startsWith('drafts.')) {
-    return Response.json({ ok: true, sent: false, reason: 'draft' });
-  }
-
-  const issue = await freshClient.fetch(unsentIssueByIdQuery, { id: _id });
-  if (!issue) {
-    return Response.json({ ok: true, sent: false, reason: 'already sent' });
-  }
-
-  const recipients = await countSubscribed();
-  if (recipients === 0) {
-    return Response.json({ ok: true, sent: false, reason: 'no subscribers' });
-  }
-
-  const res = await sendIssue(issue);
-
-  if (res.ok && res.sent > 0) {
-    await writeClient
-      .patch(_id)
-      .set({ status: 'sent', sentAt: new Date().toISOString(), recipientCount: res.sent })
-      .commit();
-  }
-
-  return Response.json({ ok: res.ok, ...res });
+  return Response.json({ ok: true, handled });
 }
 
-// A GET is handy for confirming the route is reachable after a deploy.
+// Handy for confirming the route is reachable after a deploy.
 export function GET() {
   return Response.json({ ok: true, hint: 'POST a Sanity webhook payload here.' });
 }

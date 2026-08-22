@@ -23,7 +23,11 @@ export async function fetchQuery<T>(
   query: string,
   params: Record<string, unknown> = {}
 ): Promise<T> {
-  const run = freshClient.fetch as unknown as (
+  // .bind is load-bearing: the client's fetch reads private fields off `this`,
+  // so calling a detached reference throws "Cannot read properties of
+  // undefined". Every caller here swallows errors, which made that failure look
+  // like an empty list rather than a crash.
+  const run = freshClient.fetch.bind(freshClient) as unknown as (
     q: string,
     p: Record<string, unknown>
   ) => Promise<T>;
