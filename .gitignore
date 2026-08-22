@@ -3,3 +3,11 @@ node_modules/
 out/
 .DS_Store
 .env*
+.vercel
+
+# Sanity Studio
+studio/node_modules/
+studio/dist/
+
+# Local email previews
+.preview/

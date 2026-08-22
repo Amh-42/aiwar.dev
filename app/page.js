@@ -1,4 +1,13 @@
+import Link from 'next/link';
 import Reveal from './Reveal';
+import Footer from './components/Footer';
+import PostCard from './components/PostCard';
+import SubscribeForm from './components/SubscribeForm';
+import { allTopicsQuery, postsPageQuery, sentIssuesQuery } from '../lib/queries';
+import { sanityFetch } from '../lib/sanity/fetch';
+import { formatDate } from '../lib/browse';
+
+export const revalidate = 60;
 
 /* Hand-drawn arrow, reused at four angles around the hero. */
 function Arrow({ d }) {
@@ -51,13 +60,46 @@ const VENTURES = [
 const SIDE = [
   { title: 'aiwar.dev', body: 'A bot that reads AI news so I do not have to, summarises it, and posts it. Named before I had a website.' },
   { title: 'fact.et / forbes.et', body: 'Two Ethiopian business publications. Editorial systems, not just a blog with a nice header.' },
-  { title: 'medco', body: 'A fraud-scoring API for health insurance claims. Naive Bayes, unglamorous, works.' },
   { title: 'a second brain', body: 'A wiki that documents itself. Every session writes what changed. Slightly cursed, extremely useful.' },
 ];
 
-export default function Page() {
+/* Why the tool verdicts are worth anything: the four places they get tested.
+   Domains, not a diary — what a reader needs to weigh the recommendation. */
+const PROVING_GROUND = [
+  {
+    title: 'Production systems that cannot fail quietly',
+    body: 'Payments backends, where a tool either survives real traffic and real money or it does not get used twice.',
+  },
+  {
+    title: 'Applied AI research',
+    body: 'Signal processing and model work against messy sensor data — the setting where most "AI-powered" tools quietly fall apart.',
+  },
+  {
+    title: 'A content pipeline that runs unattended',
+    body: 'Scripting, generation and rendering that has to work without a human watching. Great filter for anything that needs babysitting.',
+  },
+  {
+    title: 'Client work with a deadline',
+    body: 'Agency builds, where the question is never "is this interesting" but "does this ship on time".',
+  },
+];
+
+export default async function Page() {
+  const [postsRes, issues, topics] = await Promise.all([
+    sanityFetch({
+      query: postsPageQuery,
+      params: { q: null, topic: null, start: 0, end: 3 },
+      tags: ['content'],
+    }),
+    sanityFetch({ query: sentIssuesQuery, tags: ['content'] }),
+    sanityFetch({ query: allTopicsQuery, tags: ['content'] }),
+  ]);
+
+  const posts = postsRes?.posts ?? [];
+  const latestIssue = issues?.[0] ?? null;
+
   return (
-    <>
+    <main>
       <Reveal />
 
       {/* ---------------- HERO ---------------- */}
@@ -82,7 +124,8 @@ export default function Page() {
           </h1>
 
           <p className="hero-sub">
-            Anwar Misbah. I build in four directions at once and I am working on that.
+            Anwar Misbah — payments engineer, AI researcher, and the person testing whatever tool
+            promises to make all of that faster.
           </p>
 
           <div className="annot annot--bl">
@@ -97,29 +140,60 @@ export default function Page() {
             AI support that answers before I wake up
           </div>
 
-          {/* Two notes pinned to the wall, each on its own thread. The signature. */}
-          <aside className="hero-note hero-note--a">
-            <svg className="string" viewBox="0 0 96 78" aria-hidden="true">
-              <path d="M4 8 C 34 4, 62 26, 92 66" />
-            </svg>
+          {/* The main event: an index card pinned dead centre under the lockup. */}
+          <div className="hero-join rise in">
             <span className="pin" aria-hidden="true" />
-            <h2>Two jobs</h2>
-            <p>One moves money. One reads heartbeats. Same week, same laptop.</p>
-          </aside>
-
-          <aside className="hero-note hero-note--b">
-            <svg className="string" viewBox="0 0 96 78" aria-hidden="true">
-              <path d="M4 8 C 34 4, 62 26, 92 66" />
-            </svg>
-            <span className="pin pin--blue" aria-hidden="true" />
-            <h2>Two of my own</h2>
-            <p>A channel with no face in it, and an agency that runs while I sleep.</p>
-          </aside>
+            <span className="pin pin--r pin--blue" aria-hidden="true" />
+            <p className="hero-join-kicker">The newsletter · one email a week</p>
+            <h2 className="hero-join-h">AI, Actually Useful</h2>
+            <p className="hero-join-p">
+              Five tools I <em>actually used</em> this week, each with a verdict — kept, dropped, or
+              watching. One deep cut with the config that made it work. One hyped thing to skip.
+            </p>
+            <SubscribeForm source="hero" cta="Send it to me" />
+            <p className="hero-join-foot">
+              <Link href="/newsletter">See what&apos;s in it</Link> ·{' '}
+              <a href="https://t.me/aiwar_dev" target="_blank" rel="noopener noreferrer">
+                or the Telegram channel
+              </a>
+            </p>
+          </div>
 
           <a className="hero-scroll" href="#ventures">
             the whole board
             <span aria-hidden="true">↓</span>
           </a>
+        </div>
+      </section>
+
+      <div className="tear" aria-hidden="true" />
+
+      {/* ---------------- PROVING GROUND ---------------- */}
+      <section id="now">
+        <div className="wrap">
+          <p className="eyebrow rise">where the verdicts come from</p>
+          <h2 className="h-hand rise">Everything gets tested on real work</h2>
+          <p className="note-text rise" style={{ maxWidth: '58ch', fontSize: '1.1rem' }}>
+            A tool recommendation is only worth what it was tested against. These are the four
+            places anything I write about has to survive first.
+          </p>
+          <ul className="now-list rise">
+            {PROVING_GROUND.map((n) => (
+              <li key={n.title}>
+                <b>{n.title}</b>
+                {n.body}
+              </li>
+            ))}
+          </ul>
+          {latestIssue ? (
+            <p className="now-latest rise">
+              Latest issue —{' '}
+              <Link href={`/newsletter/${latestIssue.slug}`}>
+                #{latestIssue.number}: {latestIssue.subject}
+              </Link>{' '}
+              <span>{formatDate(latestIssue.issueDate)}</span>
+            </p>
+          ) : null}
         </div>
       </section>
 
@@ -156,18 +230,28 @@ export default function Page() {
 
       <div className="tear" aria-hidden="true" />
 
-      {/* ---------------- ILLUSTRATION SLOT ---------------- */}
-      <section id="desk">
+      {/* ---------------- WRITING ---------------- */}
+      <section id="writing">
         <div className="wrap">
-          <p className="eyebrow rise">the desk, roughly</p>
-          <h2 className="h-hand rise">What it actually looks like</h2>
+          <p className="eyebrow rise">longer than a telegram post</p>
+          <h2 className="h-hand rise">Writing</h2>
+          <p className="note-text rise" style={{ maxWidth: '56ch', fontSize: '1.1rem' }}>
+            Written after the work, not instead of it.{' '}
+            <Link href="/blog">All posts →</Link>
+          </p>
 
-          <div className="rise" style={{ marginTop: '2rem' }}>
-            <div className="ph">
-              Drop the desk illustration here
-              <em>public/assets/desk.png — replace the .ph div in app/page.js with an &lt;img&gt;</em>
+          {posts.length === 0 ? (
+            <div className="ph rise">
+              The first post is being written.
+              <em>Posts are authored in the Studio and appear here on publish.</em>
             </div>
-          </div>
+          ) : (
+            <div className="cards">
+              {posts.map((p) => (
+                <PostCard key={p.slug} post={p} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -206,7 +290,8 @@ export default function Page() {
             <p>
               I spent years sending every half-thought to Saved Messages. Thousands of messages,
               zero replies, very healthy. Now they go on a Telegram channel instead, four or five
-              times a day, mostly about whatever broke that morning.
+              times a day, mostly about whatever broke that morning. The newsletter is the weekly
+              edit of it — the part that survived the week.
             </p>
             <a className="btn" href="https://t.me/aiwar_dev" target="_blank" rel="noopener noreferrer">
               Read @aiwar_dev
@@ -215,20 +300,7 @@ export default function Page() {
         </div>
       </section>
 
-      {/* ---------------- FOOTER ---------------- */}
-      <footer>
-        <div className="wrap">
-          <nav className="links">
-            <a href="https://t.me/aiwar_dev" target="_blank" rel="noopener noreferrer">Telegram</a>
-            <a href="https://github.com/Amh-42" target="_blank" rel="noopener noreferrer">GitHub</a>
-            <a href="mailto:anwarandalus@gmail.com">Email</a>
-          </nav>
-          <p className="sig">— Anwar</p>
-          <p className="colophon">
-            aiwar.dev · built on a wall of sticky notes · Addis Ababa
-          </p>
-        </div>
-      </footer>
-    </>
+      <Footer topics={topics} />
+    </main>
   );
 }
