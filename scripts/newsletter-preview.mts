@@ -5,7 +5,7 @@
  * Usage: npm run newsletter:preview
  */
 import { mkdirSync, writeFileSync } from "node:fs";
-import { getLatestDraftIssue } from "../lib/newsletter";
+import { listIssues, getIssueBySlug } from "../lib/newsletter";
 import { previewIssueHtml, previewWelcomeHtml } from "../lib/resend";
 
 async function main() {
@@ -14,13 +14,14 @@ async function main() {
   writeFileSync(".preview/welcome.html", previewWelcomeHtml());
   console.log("✓ .preview/welcome.html");
 
-  const issue = await getLatestDraftIssue();
+  const slug = process.argv[process.argv.indexOf("--slug") + 1];
+  const issue = slug ? await getIssueBySlug(slug) : ((await listIssues())[0] ?? null);
   if (!issue) {
-    console.log("No draft issue in Sanity yet — welcome mail only.");
+    console.log("No issue in Sanity yet — welcome mail only.");
     return;
   }
   writeFileSync(".preview/issue.html", previewIssueHtml(issue));
-  console.log(`✓ .preview/issue.html — issue #${issue.number}: ${issue.subject}`);
+  console.log(`✓ .preview/issue.html — ${issue.subject}`);
 }
 
 main().catch((e) => {

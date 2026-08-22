@@ -4,7 +4,7 @@
 // script. Never import this from a Client Component.
 
 import { randomUUID, createHash } from "node:crypto";
-import { writeClient, hasWriteToken } from "./sanity/writeClient";
+import { mutateClient as writeClient, hasWriteToken } from "./sanity/mutate";
 import { fetchQuery } from "./sanity/client";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

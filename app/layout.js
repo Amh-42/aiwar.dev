@@ -1,4 +1,5 @@
 import { Anton, Caveat, Architects_Daughter, Courier_Prime } from 'next/font/google';
+import Reveal from './Reveal';
 import './globals.css';
 
 // Display — heavy condensed grotesque, gets an ink-texture mask in CSS.
@@ -67,6 +68,7 @@ export default function RootLayout({ children }) {
           <div className="wall-grain" />
           <div className="wall-vignette" />
         </div>
+        <Reveal />
         {children}
       </body>
     </html>

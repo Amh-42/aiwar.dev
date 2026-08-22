@@ -47,8 +47,8 @@ export default function Footer({ topics = [] }) {
             <p className="eyebrow">before you go</p>
             <h2 className="h-hand">One email a week, and it&apos;s the useful one</h2>
             <p className="note-text" style={{ maxWidth: '46ch' }}>
-              Five things I actually used, one deep cut with the config that made it work, and the
-              hyped thing you can skip. Nothing I haven&apos;t run myself.
+              What I&apos;m using, what I&apos;ve worked out, what&apos;s worth your time. Nothing I
+              haven&apos;t run myself.
             </p>
           </div>
           <div className="foot-sub">

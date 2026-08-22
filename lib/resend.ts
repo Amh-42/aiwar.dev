@@ -57,7 +57,7 @@ export async function sendWelcomeEmail(
   const vars = {
     EXTRA:
       opts.extra ??
-      "First issue lands this Sunday. If it stops being useful, the unsubscribe link at the bottom always works.",
+      "First issue lands soon. If it stops being useful, the unsubscribe link at the bottom always works.",
     BROWSE_URL: `${SITE_URL}/newsletter`,
     UNSUB_URL: unsubscribeUrl(token),
   };

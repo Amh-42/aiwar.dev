@@ -1,5 +1,5 @@
 import { freshClient } from '../lib/sanity/client';
-import { postSlugsQuery, sentIssuesQuery } from '../lib/queries';
+import { postSlugsQuery, publishedIssuesQuery } from '../lib/queries';
 import { SITE_URL } from '../lib/site';
 
 export const revalidate = 3600;
@@ -10,7 +10,7 @@ export default async function sitemap() {
   try {
     [posts, issues] = await Promise.all([
       freshClient.fetch(postSlugsQuery),
-      freshClient.fetch(sentIssuesQuery),
+      freshClient.fetch(publishedIssuesQuery),
     ]);
   } catch {
     // A CMS hiccup shouldn't take the sitemap down — ship the static routes.

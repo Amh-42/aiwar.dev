@@ -66,32 +66,31 @@ export const topicBySlugQuery = groq`
 
 // --- Newsletter -----------------------------------------------------------
 
+// Images are resolved to CDN urls here so the email renderer (which has no
+// Sanity client) can just use them.
 const issueFields = groq`
-  _id, number, subject, preheader, intro, issueDate, status, sentAt, recipientCount,
+  _id, subject, preheader, issueDate, number, status, sentAt, recipientCount,
   "slug": slug.current,
-  tools, deepCut, skip
-`;
-
-export const latestDraftIssueQuery = groq`
-  *[_type == "issue" && status == "draft"] | order(number desc)[0]{ ${issueFields} }
+  body[]{
+    ...,
+    _type == "image" => { ..., "url": asset->url }
+  }
 `;
 
 export const issueByIdQuery = groq`*[_type == "issue" && _id == $id][0]{ ${issueFields} }`;
 
 export const issueBySlugQuery = groq`
-  *[_type == "issue" && slug.current == $slug && status == "sent"][0]{ ${issueFields} }
+  *[_type == "issue" && slug.current == $slug][0]{ ${issueFields} }
 `;
 
-export const sentIssuesQuery = groq`
-  *[_type == "issue" && status == "sent"] | order(number desc)[0...50]{
-    number, subject, preheader, issueDate, "slug": slug.current,
-    "toolCount": count(tools)
+// Everything published shows in the archive immediately — being mailed out is a
+// separate step that can lag by a minute.
+export const publishedIssuesQuery = groq`
+  *[_type == "issue" && defined(slug.current)] | order(issueDate desc)[0...50]{
+    subject, preheader, issueDate, number, status, "slug": slug.current
   }
 `;
 
-export const allIssuesQuery = groq`
-  *[_type == "issue"] | order(number desc)[0...50]{
-    _id, number, subject, issueDate, status, sentAt, recipientCount,
-    "slug": slug.current
-  }
+export const unsentIssueByIdQuery = groq`
+  *[_type == "issue" && _id == $id && status != "sent"][0]{ ${issueFields} }
 `;

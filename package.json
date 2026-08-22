@@ -10,10 +10,12 @@
     "resend:templates": "node scripts/create-resend-templates.mjs",
     "resend:templates:update": "node scripts/update-resend-templates.mjs",
     "newsletter:preview": "tsx --env-file=.env.local scripts/newsletter-preview.mts",
-    "newsletter:send": "tsx --env-file=.env.local scripts/newsletter-send.mts"
+    "newsletter:send": "tsx --env-file=.env.local scripts/newsletter-send.mts",
+    "seed": "tsx --env-file=.env.local scripts/seed.mts"
   },
   "dependencies": {
     "@portabletext/react": "^6.2.0",
+    "@portabletext/to-html": "^3.0.0",
     "@sanity/image-url": "^2.1.1",
     "@vercel/analytics": "^2.0.1",
     "next": "^16.2.9",

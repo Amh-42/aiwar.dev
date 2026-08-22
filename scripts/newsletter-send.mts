@@ -3,14 +3,15 @@
  *
  *   npm run newsletter:send -- --dry            # count recipients, send nothing
  *   npm run newsletter:send -- --to me@x.com    # one test recipient
- *   npm run newsletter:send -- --id <sanity-id> # a specific issue
+ *   npm run newsletter:send -- --slug <slug>    # a specific issue
+ *   npm run newsletter:send -- --id <sanity-id> # ...or by document id
  *   npm run newsletter:send                     # the latest draft, for real
  */
 import { randomUUID } from "node:crypto";
-import { getIssueById, getLatestDraftIssue } from "../lib/newsletter";
+import { getIssueById, getIssueBySlug, listIssues } from "../lib/newsletter";
 import { sendIssue } from "../lib/resend";
 import { countSubscribed } from "../lib/subscribers";
-import { writeClient } from "../lib/sanity/writeClient";
+import { mutateClient as writeClient } from "../lib/sanity/mutate";
 
 function arg(flag: string): string | undefined {
   const i = process.argv.indexOf(flag);
@@ -22,14 +23,19 @@ async function main() {
   const testTo = arg("--to");
   const id = arg("--id");
 
-  const issue = id ? await getIssueById(id) : await getLatestDraftIssue();
+  const slug = arg("--slug");
+  const issue = id
+    ? await getIssueById(id)
+    : slug
+      ? await getIssueBySlug(slug)
+      : (await listIssues()).find((i) => i.status !== "sent") ?? null;
+
   if (!issue) {
-    console.error("No issue found. Create one in the Studio and leave it as a draft.");
+    console.error("No unsent issue found. Publish one in the Studio first.");
     process.exit(1);
   }
 
-  console.log(`Issue #${issue.number}: ${issue.subject}`);
-  console.log(`  ${issue.tools?.length ?? 0} tools · deep cut: ${issue.deepCut?.name || "—"} · skip: ${issue.skip?.name || "—"}`);
+  console.log(`${issue.subject} (${issue.slug})`);
 
   const recipients = testTo ? [{ email: testTo, token: randomUUID() }] : undefined;
   if (testTo) console.log(`  TEST SEND → ${testTo}`);
@@ -45,7 +51,7 @@ async function main() {
     .patch(issue._id)
     .set({ status: "sent", sentAt: new Date().toISOString(), recipientCount: res.sent })
     .commit();
-  console.log(`✓ marked issue #${issue.number} as sent`);
+  console.log(`✓ marked "${issue.subject}" as sent`);
 }
 
 main().catch((e) => {

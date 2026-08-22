@@ -665,6 +665,15 @@ footer {
   transition: opacity 0.62s ease, transform 0.62s cubic-bezier(0.2, 0.8, 0.3, 1);
 }
 
+/* Content must never depend on JS to be readable. If scripting is off, the
+   reveal simply doesn't happen and everything is visible from the start. */
+@media (scripting: none) {
+  .rise {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 .rise.in {
   opacity: 1;
   transform: none;
@@ -1303,10 +1312,30 @@ footer {
   color: var(--pencil);
 }
 
+/* The old `footer { text-align: center }` still applies to this element, so the
+   columns are re-anchored left and only the sign-off is centred. Both children
+   are <p>, which carries a global max-width: 62ch — without the auto margin the
+   text centres inside a left-aligned 62ch box and reads as off-centre. */
+.site-footer .foot-lead,
+.site-footer .fgrid {
+  text-align: left;
+}
+
 .foot-base {
   margin-top: 2.6rem;
   padding-top: 1.4rem;
   border-top: 1px dashed rgba(27, 26, 23, 0.28);
+  text-align: center;
+}
+
+.foot-base .sig,
+.foot-base .colophon {
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+.foot-base .colophon {
+  margin-bottom: 0;
 }
 
 @media (max-width: 780px) {

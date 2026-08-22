@@ -1,9 +1,8 @@
 import Link from 'next/link';
-import Reveal from './Reveal';
 import Footer from './components/Footer';
 import PostCard from './components/PostCard';
 import SubscribeForm from './components/SubscribeForm';
-import { allTopicsQuery, postsPageQuery, sentIssuesQuery } from '../lib/queries';
+import { allTopicsQuery, postsPageQuery, publishedIssuesQuery } from '../lib/queries';
 import { sanityFetch } from '../lib/sanity/fetch';
 import { formatDate } from '../lib/browse';
 
@@ -70,7 +69,7 @@ export default async function Page() {
       params: { q: null, topic: null, start: 0, end: 3 },
       tags: ['content'],
     }),
-    sanityFetch({ query: sentIssuesQuery, tags: ['content'] }),
+    sanityFetch({ query: publishedIssuesQuery, tags: ['content'] }),
     sanityFetch({ query: allTopicsQuery, tags: ['content'] }),
   ]);
 
@@ -79,8 +78,6 @@ export default async function Page() {
 
   return (
     <main>
-      <Reveal />
-
       {/* ---------------- HERO ---------------- */}
       <section className="hero">
         <div className="hero-inner">
@@ -126,8 +123,8 @@ export default async function Page() {
             <p className="hero-join-kicker">The newsletter · one email a week</p>
             <h2 className="hero-join-h">AI, Actually Useful</h2>
             <p className="hero-join-p">
-              Five tools I <em>actually used</em> this week, each with a verdict — kept, dropped, or
-              watching. One deep cut with the config that made it work. One hyped thing to skip.
+              One email a week about AI — what I&apos;m using, what I&apos;ve worked out, and what&apos;s
+              actually worth your time. From someone building with it, not writing about it.
             </p>
             <SubscribeForm source="hero" cta="Send it to me" />
             <p className="hero-join-foot">
@@ -191,9 +188,7 @@ export default async function Page() {
           {latestIssue ? (
             <p className="now-latest rise">
               Latest issue —{' '}
-              <Link href={`/newsletter/${latestIssue.slug}`}>
-                #{latestIssue.number}: {latestIssue.subject}
-              </Link>{' '}
+              <Link href={`/newsletter/${latestIssue.slug}`}>{latestIssue.subject}</Link>{' '}
               <span>{formatDate(latestIssue.issueDate)}</span>
             </p>
           ) : null}

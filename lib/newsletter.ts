@@ -4,12 +4,7 @@
 // Uses relative imports so `tsx` can run it straight from a CLI script.
 
 import { freshClient } from "./sanity/client";
-import {
-  issueByIdQuery,
-  issueBySlugQuery,
-  latestDraftIssueQuery,
-  allIssuesQuery,
-} from "./queries";
+import { issueByIdQuery, issueBySlugQuery, publishedIssuesQuery } from "./queries";
 import { renderIssueBody, renderIssueText } from "./email/brand.mjs";
 
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://aiwar.dev";
@@ -17,28 +12,17 @@ export const NEWSLETTER_FROM =
   process.env.NEWSLETTER_FROM || "Anwar at aiwar.dev <hey@aiwar.dev>";
 export const NEWSLETTER_REPLY_TO = process.env.NEWSLETTER_REPLY_TO || undefined;
 
-export type Tool = {
-  name?: string;
-  url?: string;
-  whatFor?: string;
-  verdict?: "kept" | "dropped" | "watching";
-  note?: string;
-};
-
 export type IssueDoc = {
   _id: string;
-  number?: number;
   subject?: string;
   slug?: string;
   preheader?: string;
-  intro?: string;
   issueDate?: string;
+  number?: number;
   status?: string;
   sentAt?: string;
   recipientCount?: number;
-  tools?: Tool[];
-  deepCut?: { name?: string; url?: string; body?: string; code?: string };
-  skip?: { name?: string; url?: string; why?: string };
+  body?: unknown[];
 };
 
 export function unsubscribeUrl(token: string): string {
@@ -54,10 +38,6 @@ export function formatIssueDate(iso: string | undefined): string {
   return d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 }
 
-export async function getLatestDraftIssue(): Promise<IssueDoc | null> {
-  return freshClient.fetch<IssueDoc | null>(latestDraftIssueQuery);
-}
-
 export async function getIssueById(id: string): Promise<IssueDoc | null> {
   return freshClient.fetch<IssueDoc | null>(issueByIdQuery, { id });
 }
@@ -67,7 +47,12 @@ export async function getIssueBySlug(slug: string): Promise<IssueDoc | null> {
 }
 
 export async function listIssues(): Promise<IssueDoc[]> {
-  return freshClient.fetch<IssueDoc[]>(allIssuesQuery);
+  return freshClient.fetch<IssueDoc[]>(publishedIssuesQuery);
+}
+
+export function issueLabel(issue: IssueDoc): string {
+  const date = formatIssueDate(issue.issueDate);
+  return issue.number ? `Issue ${issue.number} · ${date}` : date;
 }
 
 // The variable payload for the `aiwar-weekly` Resend template. BODY is raw HTML
@@ -77,10 +62,9 @@ export function issueTemplateVariables(
   opts: { token: string }
 ): Record<string, string> {
   return {
-    ISSUE_NO: String(issue.number ?? ""),
-    ISSUE_DATE: formatIssueDate(issue.issueDate),
+    ISSUE_LABEL: issueLabel(issue),
     HEADLINE: issue.subject || "AI, Actually Useful",
-    PREHEADER: issue.preheader || "Five things I actually used this week.",
+    PREHEADER: issue.preheader || issue.subject || "This week, on AI.",
     BODY: renderIssueBody(issue),
     BROWSER_URL: issueUrl(issue.slug),
     UNSUB_URL: unsubscribeUrl(opts.token),

@@ -73,8 +73,7 @@ export default async function PostPage({ params }) {
             <span className="pin pin--blue" aria-hidden="true" />
             <h2>Get the weekly one</h2>
             <p>
-              Five things I actually used, one deep cut, one thing to skip. Same register as this
-              post, one email a week.
+              One email a week about AI — same register as this post, a lot shorter.
             </p>
             <SubscribeForm source="blog-post" cta="Join" compact />
           </div>
