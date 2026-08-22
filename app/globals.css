@@ -1,0 +1,1359 @@
+/* =========================================================
+   aiwar.dev — a studio wall.
+   Everything is paper, pins, thread and handwriting.
+   No UI framework. Texture is SVG-in-CSS so there are no image
+   dependencies for the surface itself.
+   ========================================================= */
+
+:root {
+  /* Paper & concrete */
+  --paper: #c9c6c0;
+  --paper-lit: #e8e5df;
+  --paper-deep: #8f8c86;
+
+  /* Ink */
+  --ink: #1b1a17;
+  --graphite: #4c4a45;
+  --pencil: #6d6a64;
+
+  /* The thread, the pins, the dot */
+  --thread: #bf2419;
+  --thread-dark: #8d1810;
+  --pin-blue: #23408f;
+
+  /* Notes */
+  --note-yellow: #f0dd72;
+  --note-yellow-2: #e3cd5c;
+  --note-blue: #bcd3e8;
+  --note-white: #f2efe6;
+
+  --shadow-lift: 0 1px 2px rgba(0, 0, 0, 0.22), 0 8px 18px rgba(0, 0, 0, 0.18);
+  --shadow-flat: 0 1px 1px rgba(0, 0, 0, 0.2), 0 3px 8px rgba(0, 0, 0, 0.14);
+
+  --edge: clamp(1.1rem, 4vw, 4rem);
+  --maxw: 1180px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--f-type), 'Courier New', monospace;
+  font-size: 16px;
+  line-height: 1.7;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ---------- The wall ---------------------------------- */
+
+.wall {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Faint drafting grid */
+.wall-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(50, 48, 44, 0.14) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(50, 48, 44, 0.14) 1px, transparent 1px);
+  background-size: 58px 58px;
+  mask-image: radial-gradient(ellipse 70% 55% at 50% 32%, #000 20%, transparent 78%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 55% at 50% 32%, #000 20%, transparent 78%);
+}
+
+/* Spotlight from above — the light source in the reference */
+.wall-light {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 46% 52% at 50% -6%, rgba(255, 253, 246, 0.92), transparent 62%),
+    radial-gradient(ellipse 90% 70% at 50% 30%, rgba(255, 252, 244, 0.34), transparent 70%);
+}
+
+/* Paper fibre. feTurbulence, no image file. */
+.wall-grain {
+  position: absolute;
+  inset: -50%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.42'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+
+/* Heavy edge falloff — the vintage corners */
+.wall-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 78% 72% at 50% 42%,
+    transparent 38%,
+    rgba(28, 26, 22, 0.2) 78%,
+    rgba(20, 18, 15, 0.46) 100%
+  );
+}
+
+/* ---------- Shared layout ----------------------------- */
+
+main {
+  position: relative;
+  z-index: 1;
+}
+
+.wrap {
+  width: 100%;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding-inline: var(--edge);
+}
+
+section {
+  position: relative;
+  padding-block: clamp(4.5rem, 11vw, 9rem);
+}
+
+/* Hand-torn divider between sections */
+.tear {
+  height: 26px;
+  background: rgba(43, 41, 37, 0.16);
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='26' preserveAspectRatio='none'%3E%3Cpath d='M0 13 Q 30 4 60 12 T 120 13 T 180 10 T 240 14 T 300 11 T 360 15 T 420 12 T 480 14 T 540 10 T 600 13 T 660 15 T 720 11 T 780 14 T 840 12 T 900 15 T 960 11 T 1020 13 T 1080 12 T 1140 14 T 1200 12' stroke='%23000' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+  mask-size: 100% 100%;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='26' preserveAspectRatio='none'%3E%3Cpath d='M0 13 Q 30 4 60 12 T 120 13 T 180 10 T 240 14 T 300 11 T 360 15 T 420 12 T 480 14 T 540 10 T 600 13 T 660 15 T 720 11 T 780 14 T 840 12 T 900 15 T 960 11 T 1020 13 T 1080 12 T 1140 14 T 1200 12' stroke='%23000' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+  -webkit-mask-size: 100% 100%;
+}
+
+/* ---------- Type ------------------------------------- */
+
+.eyebrow {
+  font-family: var(--f-note), cursive;
+  font-size: 0.95rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pencil);
+  margin: 0 0 0.5rem;
+}
+
+.h-hand {
+  font-family: var(--f-hand), cursive;
+  font-weight: 700;
+  font-size: clamp(2.3rem, 6vw, 3.9rem);
+  line-height: 1.05;
+  margin: 0 0 1.4rem;
+  color: var(--ink);
+}
+
+.note-text {
+  font-family: var(--f-note), cursive;
+  color: var(--graphite);
+  line-height: 1.55;
+}
+
+p {
+  margin: 0 0 1.1rem;
+  max-width: 62ch;
+}
+
+a {
+  color: var(--ink);
+  text-decoration-color: var(--thread);
+  text-underline-offset: 4px;
+  text-decoration-thickness: 2px;
+}
+
+a:hover {
+  color: var(--thread-dark);
+}
+
+:focus-visible {
+  outline: 3px solid var(--thread);
+  outline-offset: 3px;
+}
+
+/* ---------- Hero ------------------------------------- */
+
+.hero {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding-block: clamp(5rem, 12vh, 8rem) clamp(3rem, 8vh, 6rem);
+}
+
+.hero-inner {
+  position: relative;
+  width: 100%;
+  max-width: var(--maxw);
+  padding-inline: var(--edge);
+}
+
+/* The lockup: AI / WAR stacked, like the reference's PORT/FOLIO */
+.lockup {
+  position: relative;
+  text-align: center;
+  font-family: var(--f-display), Impact, sans-serif;
+  line-height: 0.78;
+  letter-spacing: -0.02em;
+  margin: 0;
+  /* Ink texture punched through the letterforms */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='i'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='5'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' fill='%23141310'/%3E%3Crect width='400' height='400' filter='url(%23i)' opacity='0.3'/%3E%3C/svg%3E");
+  background-size: 380px 380px;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 1px rgba(0, 0, 0, 0.28));
+}
+
+.lockup-l1,
+.lockup-l2 {
+  display: block;
+  font-size: clamp(5.2rem, 21vw, 15.5rem);
+}
+
+.lockup-l2 {
+  margin-top: -0.06em;
+}
+
+/* The red dot — the one pure colour in the lockup */
+.dot {
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  width: clamp(58px, 11vw, 132px);
+  aspect-ratio: 1;
+  transform: translate(-46%, -50%);
+  border-radius: 50%;
+  background: var(--thread);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='d'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23d)' opacity='0.35'/%3E%3C/svg%3E");
+  background-blend-mode: multiply;
+  z-index: -1;
+  opacity: 0.94;
+}
+
+.hero-sub {
+  position: relative;
+  text-align: center;
+  font-family: var(--f-hand), cursive;
+  font-size: clamp(1.35rem, 3.4vw, 2.1rem);
+  font-weight: 600;
+  color: var(--graphite);
+  margin: 1.8rem auto 0;
+  max-width: 30ch;
+  line-height: 1.3;
+}
+
+.hero-scroll {
+  display: block;
+  text-align: center;
+  margin-top: 2.6rem;
+  font-family: var(--f-note), cursive;
+  font-size: 0.9rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pencil);
+  text-decoration: none;
+}
+
+.hero-scroll span {
+  display: block;
+  font-size: 1.4rem;
+  margin-top: 0.2rem;
+  animation: bob 2.4s ease-in-out infinite;
+}
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+/* Hero pinned notes — the signature: paper on the wall, on thread */
+.hero-note {
+  position: absolute;
+  width: 190px;
+  padding: 1.05rem 1rem 0.95rem;
+  box-shadow: var(--shadow-lift);
+  z-index: 4;
+}
+
+.hero-note h2 {
+  font-family: var(--f-hand), cursive;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+  line-height: 1.1;
+}
+
+.hero-note p {
+  font-family: var(--f-note), cursive;
+  font-size: 0.87rem;
+  line-height: 1.45;
+  margin: 0;
+  color: #33312c;
+}
+
+.hero-note--a {
+  top: 42%;
+  left: 1%;
+  transform: rotate(-4deg);
+  background: var(--note-yellow);
+}
+
+.hero-note--b {
+  bottom: 30%;
+  right: 1%;
+  transform: rotate(3.2deg);
+  background: var(--note-blue);
+}
+
+.hero-note .string {
+  position: absolute;
+  top: -6px;
+  width: 96px;
+  height: 78px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.hero-note--a .string { right: -92px; }
+.hero-note--b .string { left: -92px; transform: scaleX(-1); }
+
+.hero-note .string path {
+  fill: none;
+  stroke: var(--thread);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 2px 1.5px rgba(0, 0, 0, 0.3));
+}
+
+@media (max-width: 1100px) {
+  .hero-note { display: none; }
+}
+
+/* ---------- Pinned notes ------------------------------ */
+
+.note {
+  position: relative;
+  padding: 1.5rem 1.35rem 1.3rem;
+  background: var(--note-yellow);
+  background-image: linear-gradient(160deg, rgba(255, 255, 255, 0.42), transparent 45%);
+  box-shadow: var(--shadow-lift);
+  color: var(--ink);
+}
+
+.note::after {
+  /* paper grain on the note itself */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23m)' opacity='0.32'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.note--blue { background: var(--note-blue); }
+.note--white { background: var(--note-white); }
+
+.note h3 {
+  font-family: var(--f-hand), cursive;
+  font-weight: 700;
+  font-size: 1.75rem;
+  line-height: 1.1;
+  margin: 0 0 0.5rem;
+}
+
+.note p {
+  font-family: var(--f-note), cursive;
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 0;
+  color: #2e2c28;
+}
+
+.note .meta {
+  display: block;
+  margin-top: 0.85rem;
+  font-family: var(--f-type), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #5d5a53;
+}
+
+/* Pin */
+.pin {
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 28%, #f4705f, var(--thread) 52%, var(--thread-dark));
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.35), inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+  z-index: 3;
+}
+
+.pin--blue {
+  background: radial-gradient(circle at 34% 28%, #6f8ede, var(--pin-blue) 52%, #16265c);
+}
+
+.pin--l { left: 22px; transform: none; }
+.pin--r { left: auto; right: 22px; transform: none; }
+
+/* ---------- Ventures board ---------------------------- */
+
+.board {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(228px, 1fr));
+  gap: clamp(1.5rem, 2.6vw, 2.2rem);
+  margin-top: 3rem;
+}
+
+.board .note {
+  position: relative;
+  z-index: 1;
+  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.3, 1), box-shadow 0.28s ease;
+}
+
+.board .note:nth-child(odd) { transform: rotate(-1.4deg); }
+.board .note:nth-child(even) { transform: rotate(1.1deg); }
+.board .note:nth-child(3n) { transform: rotate(0.6deg); }
+
+.board .note:hover,
+.board .note:focus-within {
+  transform: rotate(0deg) translateY(-6px);
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2), 0 18px 34px rgba(0, 0, 0, 0.24);
+}
+
+/* The red thread linking related ventures */
+.thread-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: visible;
+}
+
+.thread-layer path {
+  fill: none;
+  stroke: var(--thread);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 2px 1.5px rgba(0, 0, 0, 0.32));
+  opacity: 0.9;
+}
+
+/* ---------- Annotations (arrow + hand label) ---------- */
+
+.annot {
+  position: absolute;
+  font-family: var(--f-note), cursive;
+  color: var(--graphite);
+  font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+  line-height: 1.4;
+  max-width: 21ch;
+  pointer-events: none;
+}
+
+.annot b {
+  display: block;
+  font-family: var(--f-hand), cursive;
+  font-weight: 700;
+  font-size: 1.45em;
+  color: var(--ink);
+  margin-bottom: 0.1em;
+}
+
+.annot--tl { top: 2%; left: 0; text-align: left; }
+.annot--tr { top: 4%; right: 0; text-align: right; }
+.annot--bl { bottom: 4%; left: 0; }
+.annot--br { bottom: 2%; right: 0; text-align: right; }
+
+.annot svg {
+  display: block;
+  width: 74px;
+  height: 46px;
+  stroke: var(--graphite);
+  stroke-width: 2;
+  fill: none;
+  opacity: 0.72;
+}
+
+.annot--tr svg,
+.annot--br svg { margin-left: auto; }
+
+@media (max-width: 950px) {
+  .annot { display: none; }
+}
+
+/* ---------- Asset placeholders ------------------------ */
+
+.ph {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 190px;
+  border: 2px dashed rgba(60, 57, 52, 0.42);
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.16) 0 12px,
+    transparent 12px 24px
+  );
+  font-family: var(--f-note), cursive;
+  color: var(--pencil);
+  text-align: center;
+  padding: 1.2rem;
+  font-size: 0.95rem;
+}
+
+.ph em {
+  display: block;
+  font-family: var(--f-type), monospace;
+  font-style: normal;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  margin-top: 0.5rem;
+  color: #6f6c65;
+}
+
+/* ---------- Now / list -------------------------------- */
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: clamp(1.4rem, 3vw, 2.2rem);
+  margin-top: 2.6rem;
+}
+
+.card {
+  position: relative;
+  background: var(--note-white);
+  padding: 1.4rem 1.3rem;
+  box-shadow: var(--shadow-flat);
+  border-left: 3px solid var(--thread);
+}
+
+.card h3 {
+  font-family: var(--f-hand), cursive;
+  font-size: 1.5rem;
+  margin: 0 0 0.35rem;
+}
+
+.card p {
+  font-family: var(--f-note), cursive;
+  font-size: 0.98rem;
+  margin: 0;
+  color: var(--graphite);
+}
+
+/* Tape strip */
+.tape {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
+  width: 86px;
+  height: 26px;
+  background: rgba(238, 232, 210, 0.72);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.16);
+  border-left: 1px dashed rgba(0, 0, 0, 0.08);
+  border-right: 1px dashed rgba(0, 0, 0, 0.08);
+}
+
+/* ---------- Channel callout --------------------------- */
+
+.channel {
+  position: relative;
+  max-width: 640px;
+  margin-inline: auto;
+  text-align: center;
+  padding: 2.6rem 2rem 2.3rem;
+  background: var(--note-yellow-2);
+  box-shadow: var(--shadow-lift);
+  transform: rotate(-0.8deg);
+}
+
+.channel h2 {
+  font-family: var(--f-hand), cursive;
+  font-size: clamp(2rem, 5vw, 2.9rem);
+  margin: 0 0 0.7rem;
+}
+
+.channel p {
+  font-family: var(--f-note), cursive;
+  margin-inline: auto;
+  color: #33312c;
+}
+
+.btn {
+  display: inline-block;
+  margin-top: 1.3rem;
+  padding: 0.72rem 1.7rem;
+  background: var(--ink);
+  color: var(--paper-lit);
+  font-family: var(--f-type), monospace;
+  font-size: 0.86rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  text-decoration: none;
+  box-shadow: 3px 3px 0 rgba(27, 26, 23, 0.28);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.btn:hover {
+  color: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 rgba(27, 26, 23, 0.34);
+}
+
+/* ---------- Footer ------------------------------------ */
+
+footer {
+  position: relative;
+  z-index: 1;
+  padding: clamp(3rem, 7vw, 5rem) 0 3.5rem;
+  text-align: center;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.6rem;
+  margin-bottom: 1.6rem;
+  font-family: var(--f-hand), cursive;
+  font-size: 1.4rem;
+}
+
+.sig {
+  font-family: var(--f-hand), cursive;
+  font-size: 2.1rem;
+  color: var(--graphite);
+  margin: 0.6rem 0 0.3rem;
+  transform: rotate(-2deg);
+}
+
+.colophon {
+  font-family: var(--f-type), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--pencil);
+}
+
+/* ---------- Reveal on scroll -------------------------- */
+
+.rise {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.62s ease, transform 0.62s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+.rise.in {
+  opacity: 1;
+  transform: none;
+}
+
+.board .note.rise.in:nth-child(odd) { transform: rotate(-1.4deg); }
+.board .note.rise.in:nth-child(even) { transform: rotate(1.1deg); }
+.board .note.rise.in:nth-child(3n) { transform: rotate(0.6deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .rise { opacity: 1; transform: none; transition: none; }
+  .hero-scroll span { animation: none; }
+  .board .note { transition: none; }
+}
+
+/* ---------- Small screens ----------------------------- */
+
+@media (max-width: 640px) {
+  .wall-grid { background-size: 42px 42px; }
+  .thread-layer { display: none; }
+  .channel { transform: none; }
+  .board .note:nth-child(n) { transform: none; }
+  .board .note.rise.in:nth-child(n) { transform: none; }
+}
+
+/* =========================================================
+   Newsletter, blog and the big footer.
+   Everything below keeps the same vocabulary as the wall
+   above it: paper, pins, tape, thread. Nothing new invented.
+   ========================================================= */
+
+/* ---------- Top nav (tape strip) ---------------------- */
+
+.topnav {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1.4rem;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 1.1rem var(--edge) 0;
+}
+
+.topnav-mark {
+  font-family: var(--f-display), Impact, sans-serif;
+  font-size: 1.25rem;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  color: var(--ink);
+  margin-right: auto;
+}
+
+.topnav-mark span {
+  color: var(--thread);
+}
+
+.topnav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.3rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.topnav a {
+  font-family: var(--f-note), cursive;
+  font-size: 1rem;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 2px;
+}
+
+.topnav a:hover,
+.topnav a[aria-current='page'] {
+  border-bottom-color: var(--thread);
+}
+
+/* ---------- Hero join card ---------------------------- */
+
+.hero-join {
+  position: relative;
+  max-width: 34rem;
+  margin: clamp(1.6rem, 4vw, 2.6rem) auto 0;
+  padding: 1.7rem 1.6rem 1.4rem;
+  background: var(--note-white);
+  border: 1px solid rgba(27, 26, 23, 0.14);
+  box-shadow: var(--shadow-lift);
+  transform: rotate(-0.5deg);
+}
+
+.hero-join::before {
+  /* the ruled line of an index card */
+  content: '';
+  position: absolute;
+  inset: 0.55rem 0.55rem auto;
+  height: 1px;
+  background: rgba(35, 64, 143, 0.28);
+}
+
+.hero-join-kicker {
+  margin: 0 0 0.3rem;
+  font-family: var(--f-note), cursive;
+  font-size: 0.9rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--pencil);
+}
+
+.hero-join-h {
+  margin: 0 0 0.6rem;
+  font-family: var(--f-hand), cursive;
+  font-size: clamp(1.9rem, 5vw, 2.6rem);
+  line-height: 1;
+  color: var(--ink);
+}
+
+.hero-join-p {
+  margin: 0 0 1.1rem;
+  font-family: var(--f-type), monospace;
+  font-size: 0.93rem;
+  line-height: 1.62;
+  color: var(--graphite);
+  max-width: none;
+}
+
+.hero-join-foot {
+  margin: 0.9rem 0 0;
+  font-family: var(--f-note), cursive;
+  font-size: 0.95rem;
+  color: var(--pencil);
+}
+
+/* ---------- Subscribe form ---------------------------- */
+
+.sub-hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.sub-label {
+  position: absolute;
+  left: -9999px;
+}
+
+.sub-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.sub-input {
+  flex: 1 1 13rem;
+  min-width: 0;
+  padding: 0.72rem 0.85rem;
+  font-family: var(--f-type), monospace;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid rgba(27, 26, 23, 0.28);
+  border-radius: 0;
+}
+
+.sub-input::placeholder {
+  color: #a4a19a;
+}
+
+.sub-input:focus-visible {
+  outline: 3px solid var(--thread);
+  outline-offset: 1px;
+}
+
+.sub-btn {
+  flex: 0 0 auto;
+  padding: 0.72rem 1.2rem;
+  font-family: var(--f-type), monospace;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #f4f2ec;
+  background: var(--ink);
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.sub-btn:hover:not(:disabled) {
+  background: var(--thread-dark);
+  border-color: var(--thread-dark);
+}
+
+.sub-btn:disabled {
+  opacity: 0.55;
+  cursor: progress;
+}
+
+.sub-help {
+  margin: 0.55rem 0 0;
+  font-family: var(--f-note), cursive;
+  font-size: 0.92rem;
+  color: var(--pencil);
+  max-width: none;
+}
+
+.sub-err {
+  color: var(--thread-dark);
+  font-weight: 700;
+}
+
+.sub-done {
+  margin: 0;
+  padding: 0.9rem 1rem;
+  font-family: var(--f-note), cursive;
+  font-size: 1.15rem;
+  color: var(--ink);
+  background: var(--note-yellow);
+  border: 1px solid rgba(27, 26, 23, 0.18);
+  box-shadow: var(--shadow-flat);
+  transform: rotate(-0.6deg);
+  max-width: none;
+}
+
+.sub-done--compact {
+  font-size: 1rem;
+}
+
+/* ---------- Page heads, reading column ---------------- */
+
+.page-head {
+  padding-block: clamp(2.5rem, 6vw, 4.5rem) clamp(2rem, 5vw, 3.5rem);
+}
+
+.wrap--read {
+  max-width: 760px;
+}
+
+.lede {
+  font-family: var(--f-type), monospace;
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: var(--graphite);
+}
+
+.post-meta {
+  font-family: var(--f-note), cursive;
+  font-size: 1rem;
+  color: var(--pencil);
+  margin: -0.7rem 0 1.1rem;
+}
+
+.post-excerpt {
+  font-family: var(--f-hand), cursive;
+  font-size: 1.45rem;
+  line-height: 1.4;
+  color: var(--graphite);
+  border-left: 3px solid var(--thread);
+  padding-left: 1rem;
+  margin-bottom: 2.2rem;
+}
+
+.result-line {
+  font-family: var(--f-note), cursive;
+  color: var(--pencil);
+  margin-bottom: 1.4rem;
+}
+
+/* ---------- Search + chips ---------------------------- */
+
+.searchbar {
+  display: flex;
+  gap: 0.5rem;
+  max-width: 30rem;
+}
+
+.searchbar input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.7rem 0.85rem;
+  font-family: var(--f-type), monospace;
+  font-size: 0.95rem;
+  background: #fff;
+  border: 1px solid rgba(27, 26, 23, 0.28);
+  border-radius: 0;
+  color: var(--ink);
+}
+
+.searchbar button {
+  padding: 0.7rem 1.05rem;
+  font-family: var(--f-type), monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #f4f2ec;
+  background: var(--ink);
+  border: 1px solid var(--ink);
+  cursor: pointer;
+}
+
+.searchbar button:hover {
+  background: var(--thread-dark);
+  border-color: var(--thread-dark);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 1.2rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  padding: 0.32rem 0.7rem;
+  font-family: var(--f-note), cursive;
+  font-size: 0.95rem;
+  text-decoration: none;
+  color: var(--graphite);
+  background: var(--note-white);
+  border: 1px solid rgba(27, 26, 23, 0.18);
+  box-shadow: var(--shadow-flat);
+}
+
+.chip span {
+  font-size: 0.78rem;
+  color: var(--pencil);
+}
+
+.chip--on,
+.chip:hover {
+  background: var(--note-yellow);
+  color: var(--ink);
+}
+
+/* ---------- Post cards, pager ------------------------- */
+
+.card-meta {
+  font-family: var(--f-note), cursive;
+  font-size: 0.9rem;
+  color: var(--pencil);
+  margin: 0 0 0.35rem;
+}
+
+.card-more {
+  display: inline-block;
+  margin-top: 0.7rem;
+  font-family: var(--f-note), cursive;
+  text-decoration: none;
+  border-bottom: 2px solid var(--thread);
+}
+
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2.6rem;
+  font-family: var(--f-note), cursive;
+}
+
+.pager-mid {
+  color: var(--pencil);
+}
+
+/* ---------- Now list ---------------------------------- */
+
+.now-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+  max-width: 62ch;
+}
+
+.now-list li {
+  position: relative;
+  padding-left: 1.7rem;
+  font-family: var(--f-type), monospace;
+  font-size: 0.98rem;
+  line-height: 1.65;
+  color: var(--graphite);
+}
+
+.now-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--thread);
+}
+
+.now-list li b {
+  display: block;
+  font-family: var(--f-hand), cursive;
+  font-weight: 700;
+  font-size: 1.3rem;
+  line-height: 1.2;
+  color: var(--ink);
+  margin-bottom: 0.15rem;
+}
+
+.now-latest {
+  margin-top: 1.8rem;
+  font-family: var(--f-note), cursive;
+  font-size: 1.1rem;
+}
+
+.now-latest span {
+  color: var(--pencil);
+  font-size: 0.9rem;
+}
+
+/* ---------- Newsletter page --------------------------- */
+
+.join-card {
+  position: relative;
+  margin-top: 2rem;
+  padding: 1.6rem 1.5rem 1.3rem;
+  background: var(--note-yellow);
+  border: 1px solid rgba(27, 26, 23, 0.18);
+  box-shadow: var(--shadow-lift);
+  transform: rotate(0.4deg);
+  max-width: 32rem;
+}
+
+.board--three {
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+
+.issue-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.9rem;
+  max-width: 46rem;
+}
+
+.issue-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 0.9rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed rgba(27, 26, 23, 0.24);
+}
+
+.issue-list a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  text-decoration: none;
+}
+
+.issue-no {
+  font-family: var(--f-display), Impact, sans-serif;
+  font-size: 1.15rem;
+  color: var(--thread);
+}
+
+.issue-subject {
+  font-family: var(--f-hand), cursive;
+  font-size: 1.35rem;
+  border-bottom: 2px solid transparent;
+}
+
+.issue-list a:hover .issue-subject {
+  border-bottom-color: var(--thread);
+}
+
+.issue-meta {
+  font-family: var(--f-note), cursive;
+  font-size: 0.92rem;
+  color: var(--pencil);
+  margin-left: auto;
+}
+
+/* The archived issue body is the email's own HTML — give it room, let its
+   inline styles do the rest. */
+.issue-body {
+  margin-top: 1.6rem;
+}
+
+.issue-body table {
+  max-width: 100%;
+}
+
+.inline-sub {
+  position: relative;
+  padding: 1.5rem 1.4rem 1.2rem;
+  background: var(--note-white);
+  border: 1px solid rgba(27, 26, 23, 0.14);
+  box-shadow: var(--shadow-lift);
+  transform: rotate(-0.4deg);
+}
+
+.inline-sub h2 {
+  font-family: var(--f-hand), cursive;
+  font-size: 1.8rem;
+  margin: 0 0 0.4rem;
+}
+
+.inline-sub p {
+  font-family: var(--f-type), monospace;
+  font-size: 0.93rem;
+  line-height: 1.6;
+  color: var(--graphite);
+  margin-bottom: 1rem;
+}
+
+/* ---------- Prose (Portable Text) --------------------- */
+
+.prose {
+  font-family: var(--f-type), monospace;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--graphite);
+}
+
+.prose h2 {
+  font-family: var(--f-hand), cursive;
+  font-size: 2rem;
+  line-height: 1.15;
+  color: var(--ink);
+  margin: 2.6rem 0 0.9rem;
+}
+
+.prose h3 {
+  font-family: var(--f-hand), cursive;
+  font-size: 1.55rem;
+  color: var(--ink);
+  margin: 2rem 0 0.7rem;
+}
+
+.prose blockquote {
+  margin: 1.6rem 0;
+  padding-left: 1.1rem;
+  border-left: 3px solid var(--thread);
+  font-family: var(--f-hand), cursive;
+  font-size: 1.35rem;
+  color: var(--ink);
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.3rem;
+}
+
+.prose li {
+  margin-bottom: 0.5rem;
+}
+
+.prose-code,
+.prose pre {
+  overflow-x: auto;
+  padding: 1rem 1.1rem;
+  background: var(--ink);
+  color: #e8e5df;
+  font-size: 0.86rem;
+  line-height: 1.65;
+}
+
+.prose-fig {
+  margin: 1.8rem 0;
+}
+
+.prose-fig img {
+  width: 100%;
+  height: auto;
+  border: 1px solid rgba(27, 26, 23, 0.18);
+  box-shadow: var(--shadow-flat);
+}
+
+.prose-fig figcaption {
+  margin-top: 0.5rem;
+  font-family: var(--f-note), cursive;
+  font-size: 0.92rem;
+  color: var(--pencil);
+}
+
+/* ---------- The big footer ---------------------------- */
+
+.site-footer {
+  position: relative;
+  z-index: 1;
+  padding-bottom: 3rem;
+  background: linear-gradient(to bottom, transparent, rgba(28, 26, 22, 0.06));
+}
+
+.foot-lead {
+  display: grid;
+  gap: 1.8rem;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  align-items: start;
+  padding-block: clamp(2.6rem, 6vw, 4rem) clamp(2rem, 5vw, 3rem);
+}
+
+.foot-sub {
+  padding: 1.4rem 1.3rem 1.1rem;
+  background: var(--note-yellow);
+  border: 1px solid rgba(27, 26, 23, 0.18);
+  box-shadow: var(--shadow-lift);
+  transform: rotate(0.5deg);
+}
+
+.fgrid {
+  display: grid;
+  gap: 2rem 1.6rem;
+  grid-template-columns: repeat(auto-fit, minmax(13.5rem, 1fr));
+  padding-top: 2rem;
+  border-top: 1px dashed rgba(27, 26, 23, 0.28);
+}
+
+.fcol-h {
+  font-family: var(--f-note), cursive;
+  font-size: 0.92rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--thread-dark);
+  margin: 0 0 0.85rem;
+}
+
+.fcol-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.62rem;
+}
+
+.fcol-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.fcol-list a {
+  font-family: var(--f-type), monospace;
+  font-size: 0.92rem;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(27, 26, 23, 0.22);
+  align-self: start;
+}
+
+.fcol-list a:hover {
+  border-bottom-color: var(--thread);
+}
+
+.fcol-note {
+  font-family: var(--f-note), cursive;
+  font-size: 0.85rem;
+  color: var(--pencil);
+  line-height: 1.35;
+}
+
+.fcol-colophon {
+  margin: 1rem 0 0;
+  font-family: var(--f-note), cursive;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--pencil);
+}
+
+.foot-base {
+  margin-top: 2.6rem;
+  padding-top: 1.4rem;
+  border-top: 1px dashed rgba(27, 26, 23, 0.28);
+}
+
+@media (max-width: 780px) {
+  .foot-lead {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-join {
+    transform: none;
+  }
+}
