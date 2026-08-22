@@ -63,27 +63,6 @@ const SIDE = [
   { title: 'a second brain', body: 'A wiki that documents itself. Every session writes what changed. Slightly cursed, extremely useful.' },
 ];
 
-/* Why the tool verdicts are worth anything: the four places they get tested.
-   Domains, not a diary — what a reader needs to weigh the recommendation. */
-const PROVING_GROUND = [
-  {
-    title: 'Production systems that cannot fail quietly',
-    body: 'Payments backends, where a tool either survives real traffic and real money or it does not get used twice.',
-  },
-  {
-    title: 'Applied AI research',
-    body: 'Signal processing and model work against messy sensor data — the setting where most "AI-powered" tools quietly fall apart.',
-  },
-  {
-    title: 'A content pipeline that runs unattended',
-    body: 'Scripting, generation and rendering that has to work without a human watching. Great filter for anything that needs babysitting.',
-  },
-  {
-    title: 'Client work with a deadline',
-    body: 'Agency builds, where the question is never "is this interesting" but "does this ship on time".',
-  },
-];
-
 export default async function Page() {
   const [postsRes, issues, topics] = await Promise.all([
     sanityFetch({
@@ -168,37 +147,6 @@ export default async function Page() {
 
       <div className="tear" aria-hidden="true" />
 
-      {/* ---------------- PROVING GROUND ---------------- */}
-      <section id="now">
-        <div className="wrap">
-          <p className="eyebrow rise">where the verdicts come from</p>
-          <h2 className="h-hand rise">Everything gets tested on real work</h2>
-          <p className="note-text rise" style={{ maxWidth: '58ch', fontSize: '1.1rem' }}>
-            A tool recommendation is only worth what it was tested against. These are the four
-            places anything I write about has to survive first.
-          </p>
-          <ul className="now-list rise">
-            {PROVING_GROUND.map((n) => (
-              <li key={n.title}>
-                <b>{n.title}</b>
-                {n.body}
-              </li>
-            ))}
-          </ul>
-          {latestIssue ? (
-            <p className="now-latest rise">
-              Latest issue —{' '}
-              <Link href={`/newsletter/${latestIssue.slug}`}>
-                #{latestIssue.number}: {latestIssue.subject}
-              </Link>{' '}
-              <span>{formatDate(latestIssue.issueDate)}</span>
-            </p>
-          ) : null}
-        </div>
-      </section>
-
-      <div className="tear" aria-hidden="true" />
-
       {/* ---------------- VENTURES ---------------- */}
       <section id="ventures">
         <div className="wrap">
@@ -239,6 +187,16 @@ export default async function Page() {
             Written after the work, not instead of it.{' '}
             <Link href="/blog">All posts →</Link>
           </p>
+
+          {latestIssue ? (
+            <p className="now-latest rise">
+              Latest issue —{' '}
+              <Link href={`/newsletter/${latestIssue.slug}`}>
+                #{latestIssue.number}: {latestIssue.subject}
+              </Link>{' '}
+              <span>{formatDate(latestIssue.issueDate)}</span>
+            </p>
+          ) : null}
 
           {posts.length === 0 ? (
             <div className="ph rise">
