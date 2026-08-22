@@ -18,7 +18,6 @@ import {
   type IssueDoc,
 } from "./newsletter";
 import { listSubscribed, type Subscriber } from "./subscribers";
-// @ts-expect-error — plain .mjs shared with the CLI scripts.
 import { weeklyTemplateHtml, welcomeTemplateHtml } from "./email/brand.mjs";
 
 export const hasResend = Boolean(process.env.RESEND_API_KEY);

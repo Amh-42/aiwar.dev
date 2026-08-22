@@ -10,7 +10,6 @@ import {
   latestDraftIssueQuery,
   allIssuesQuery,
 } from "./queries";
-// @ts-expect-error — plain .mjs shared with the CLI scripts, no types needed.
 import { renderIssueBody, renderIssueText } from "./email/brand.mjs";
 
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://aiwar.dev";

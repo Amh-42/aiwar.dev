@@ -5,9 +5,17 @@
 
 import { randomUUID, createHash } from "node:crypto";
 import { writeClient, hasWriteToken } from "./sanity/writeClient";
-import { freshClient } from "./sanity/client";
+import { fetchQuery } from "./sanity/client";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Typed as plain `string` on purpose: next-sanity infers query params from a
+// string *literal*, and these one-line lookups trip that inference up.
+const BY_ID_QUERY: string = `*[_id == $id][0]{ status, token }`;
+const BY_TOKEN_QUERY: string = `*[_type == "subscriber" && token == $token][0]{ _id, email }`;
+const SUBSCRIBED_QUERY: string =
+  `*[_type == "subscriber" && status == "subscribed"] | order(createdAt asc){ email, token }`;
+const COUNT_QUERY: string = `count(*[_type == "subscriber" && status == "subscribed"])`;
 
 export function isValidEmail(email: string): boolean {
   return EMAIL_RE.test(email);
@@ -36,8 +44,8 @@ export async function subscribe(emailRaw: string, source = "site"): Promise<Subs
   const _id = docId(email);
 
   try {
-    const existing = await freshClient.fetch<{ status?: string; token?: string } | null>(
-      `*[_id == $id][0]{ status, token }`,
+    const existing = await fetchQuery<{ status?: string; token?: string } | null>(
+      BY_ID_QUERY,
       { id: _id }
     );
 
@@ -72,9 +80,7 @@ export async function subscribe(emailRaw: string, source = "site"): Promise<Subs
 // Everyone currently subscribed, for sending.
 export async function listSubscribed(): Promise<Subscriber[]> {
   try {
-    return await freshClient.fetch<Subscriber[]>(
-      `*[_type == "subscriber" && status == "subscribed"] | order(createdAt asc){ email, token }`
-    );
+    return await fetchQuery<Subscriber[]>(SUBSCRIBED_QUERY);
   } catch {
     return [];
   }
@@ -82,9 +88,7 @@ export async function listSubscribed(): Promise<Subscriber[]> {
 
 export async function countSubscribed(): Promise<number> {
   try {
-    return await freshClient.fetch<number>(
-      `count(*[_type == "subscriber" && status == "subscribed"])`
-    );
+    return await fetchQuery<number>(COUNT_QUERY);
   } catch {
     return 0;
   }
@@ -94,8 +98,8 @@ export async function countSubscribed(): Promise<number> {
 export async function unsubscribeByToken(token: string): Promise<string | null> {
   if (!token || !hasWriteToken) return null;
   try {
-    const row = await freshClient.fetch<{ _id: string; email: string } | null>(
-      `*[_type == "subscriber" && token == $token][0]{ _id, email }`,
+    const row = await fetchQuery<{ _id: string; email: string } | null>(
+      BY_TOKEN_QUERY,
       { token }
     );
     if (!row) return null;
