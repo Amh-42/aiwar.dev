@@ -21,21 +21,21 @@
   position: relative;
   display: flex;
   justify-content: center;
-  padding: 2.4rem 0 1.4rem;
+  padding: 1.2rem 0 1.4rem;
 }
 
 /* ---------- The paper ---------------------------------- */
 
 .a5 {
-  --sheet-ink: #14171b;
-  --sheet-mute: #5c646e;
-  --sheet-dim: #98a0aa;
-  --sheet-dim-2: #a2aab3;
-  --sheet-line: #e5e8ec;
-  --sheet-hair: #f1f3f5;
-  --sheet-grid: #edf0f3;
-  --sheet-blue: #2e7df7;
-  --sheet-blue-ink: #1f6fe0;
+  --sheet-ink: var(--ink);
+  --sheet-mute: var(--graphite);
+  --sheet-dim: var(--pencil);
+  --sheet-dim-2: #7d7a73;
+  --sheet-line: rgba(27, 26, 23, 0.22);
+  --sheet-hair: rgba(27, 26, 23, 0.12);
+  --sheet-card: rgba(255, 252, 244, 0.42);
+  --sheet-blue: #23408f;
+  --sheet-blue-ink: #23408f;
   --sheet-green: #2f8a5c;
 
   position: relative;
@@ -44,19 +44,14 @@
   max-width: 680px;
   /* one PDF point, scaled to this paper's width (A5 is 148mm wide) */
   --pt: calc(100cqw / 148 * 0.3528);
-  padding: calc(18 * var(--pt)) calc(24 * var(--pt)) calc(14 * var(--pt));
-  background: #fff;
-  background-image:
-    repeating-linear-gradient(0deg, var(--sheet-grid) 0 1px, transparent 1px calc(34 * var(--pt))),
-    repeating-linear-gradient(90deg, var(--sheet-grid) 0 1px, transparent 1px calc(34 * var(--pt)));
+  padding: 0;
+  background: transparent;
   color: var(--sheet-ink);
   font-family: var(--f-sheet, 'Inter'), -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: max(11px, calc(7.6 * var(--pt)));
   line-height: 1.3;
   letter-spacing: -0.006em;
   font-feature-settings: 'tnum' 1;
-  box-shadow: var(--shadow-lift);
-  transform: rotate(-0.35deg);
 }
 
 .a5 p {
@@ -97,8 +92,8 @@
 }
 
 @keyframes day-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(46, 125, 247, 0.45); }
-  50% { box-shadow: 0 0 0 calc(3 * var(--pt)) rgba(46, 125, 247, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(35, 64, 143, 0.45); }
+  50% { box-shadow: 0 0 0 calc(3 * var(--pt)) rgba(35, 64, 143, 0); }
 }
 
 .a5 .ttl {
@@ -142,8 +137,8 @@
   position: relative;
   margin-bottom: calc(5 * var(--pt));
   padding: calc(4 * var(--pt)) calc(9 * var(--pt)) calc(6 * var(--pt));
-  background: #fff;
-  border: 0.7pt solid var(--sheet-line);
+  background: var(--sheet-card);
+  border: 1px solid var(--sheet-line);
   border-left: calc(1.8 * var(--pt)) solid var(--sheet-blue);
   border-radius: calc(8 * var(--pt));
   overflow: hidden;
@@ -189,7 +184,7 @@
 
 .a5 .now-fri {
   padding: 0 calc(3 * var(--pt));
-  border: 0.7pt solid var(--sheet-line);
+  border: 1px solid var(--sheet-line);
   border-radius: 999px;
   color: var(--sheet-dim);
   letter-spacing: 0.1em;
@@ -291,8 +286,8 @@
   padding: calc(3.4 * var(--pt)) calc(4 * var(--pt));
   text-align: center;
   color: var(--sheet-mute);
-  background: #fff;
-  border: 0.7pt solid var(--sheet-line);
+  background: var(--sheet-card);
+  border: 1px solid var(--sheet-line);
   border-radius: calc(6 * var(--pt));
 }
 
@@ -325,8 +320,8 @@
 .a5 .sheet {
   margin-bottom: calc(4 * var(--pt));
   padding: calc(2 * var(--pt)) calc(9 * var(--pt));
-  background: #fff;
-  border: 0.7pt solid var(--sheet-line);
+  background: var(--sheet-card);
+  border: 1px solid var(--sheet-line);
   border-radius: calc(8 * var(--pt));
 }
 
@@ -335,7 +330,7 @@
   align-items: baseline;
   gap: calc(5 * var(--pt));
   padding: calc(3 * var(--pt)) 0 calc(2 * var(--pt));
-  border-bottom: 0.5pt solid var(--sheet-hair);
+  border-bottom: 1px solid var(--sheet-hair);
 }
 
 .a5 .hd span {
@@ -360,7 +355,7 @@
   gap: 0 calc(4 * var(--pt));
   align-items: center;
   padding: calc(1.3 * var(--pt)) 0;
-  border-bottom: 0.5pt solid var(--sheet-hair);
+  border-bottom: 1px solid var(--sheet-hair);
   transition: background 0.3s ease, opacity 0.3s ease;
 }
 
@@ -416,29 +411,29 @@
 .a5 .r.deep .d { color: var(--sheet-green); }
 
 .a5 .r.rest .t,
-.a5 .r.rest .b b { color: #79818b; font-weight: 700; }
+.a5 .r.rest .b b { color: var(--pencil); font-weight: 700; }
 .a5 .r.rest .b b { font-size: max(11.5px, calc(8 * var(--pt))); }
 
 .a5 .r.work .i { color: var(--sheet-mute); }
 
 /* Done for today. */
-.a5 .r.is-past { opacity: 0.5; }
+.a5 .r.is-past { opacity: 0.45; }
 
 /* The live row. */
 .a5 .r.is-now {
   opacity: 1;
   margin: calc(1 * var(--pt)) calc(-5 * var(--pt));
   padding: calc(3 * var(--pt)) calc(5 * var(--pt)) calc(3.6 * var(--pt));
-  background: #f3f7ff;
+  background: rgba(35, 64, 143, 0.09);
   border-bottom: 0;
   border-radius: calc(5 * var(--pt));
-  box-shadow: inset 0 0 0 0.7pt rgba(46, 125, 247, 0.35);
+  box-shadow: inset 0 0 0 1px rgba(35, 64, 143, 0.35);
   z-index: 1;
 }
 
 .a5 .r.is-now.deep {
-  background: #f1faf5;
-  box-shadow: inset 0 0 0 0.7pt rgba(47, 138, 92, 0.35);
+  background: rgba(47, 138, 92, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(47, 138, 92, 0.35);
 }
 
 .a5 .r.is-now .d { color: var(--sheet-blue-ink); }
@@ -509,8 +504,8 @@
 
 .a5 .rules {
   padding: calc(4 * var(--pt)) calc(9 * var(--pt));
-  background: #fff;
-  border: 0.7pt solid var(--sheet-line);
+  background: var(--sheet-card);
+  border: 1px solid var(--sheet-line);
   border-left: calc(1.8 * var(--pt)) solid var(--sheet-ink);
   border-radius: calc(6 * var(--pt));
 }
@@ -519,8 +514,8 @@
   padding: calc(1.5 * var(--pt)) 0;
   font-size: max(10px, calc(6.7 * var(--pt)));
   line-height: 1.28;
-  color: #79818b;
-  border-bottom: 0.5pt solid var(--sheet-hair);
+  color: var(--graphite);
+  border-bottom: 1px solid var(--sheet-hair);
 }
 
 .a5 .rule:last-child { border-bottom: 0; }
@@ -535,7 +530,7 @@
   margin-top: calc(3 * var(--pt));
   font-size: max(9px, calc(5.8 * var(--pt)));
   line-height: 1.35;
-  color: #aab1b9;
+  color: var(--pencil);
 }
 
 .a5 .foot b { font-weight: 800; }
@@ -574,7 +569,6 @@
 /* ---------- Small screens ------------------------------- */
 
 @media (max-width: 560px) {
-  .a5 { transform: none; }
   .a5 .budget { grid-template-columns: repeat(3, 1fr); }
   .a5 .r { grid-template-columns: auto auto 1fr auto; gap: 0 0.5rem; padding-block: 0.28rem; }
   .a5 .r .b em { display: block; margin-left: 0; }

@@ -79,7 +79,6 @@ export default function IdealDay() {
   return (
     <div className="day-stage">
       <article className="a5" aria-label="The Ideal Day">
-        <span className="pin" aria-hidden="true" />
 
         <p className="kicker">
           <span className="kdot" />
