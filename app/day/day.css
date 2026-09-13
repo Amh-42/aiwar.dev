@@ -1,0 +1,572 @@
+/* =========================================================
+   /day — The Ideal Day, live.
+   The printed A5 sheet, pinned to the wall like everything
+   else on this site. Inside the paper the register switches
+   to the sheet's own: Inter-ish sans, 12mm grid, white cards,
+   hairline borders, one blue. Outside it is the wall.
+   Sizes inside the paper are in `--pt`, a point scaled to the
+   paper's width, so the proportions match the PDF at any size.
+   ========================================================= */
+
+.day-head {
+  padding-bottom: 0.4rem;
+}
+
+.day-note {
+  font-size: 1.05rem;
+  margin: -0.6rem 0 0;
+}
+
+.day-stage {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: 2.4rem 0 1.4rem;
+}
+
+/* ---------- The paper ---------------------------------- */
+
+.a5 {
+  --sheet-ink: #14171b;
+  --sheet-mute: #5c646e;
+  --sheet-dim: #98a0aa;
+  --sheet-dim-2: #a2aab3;
+  --sheet-line: #e5e8ec;
+  --sheet-hair: #f1f3f5;
+  --sheet-grid: #edf0f3;
+  --sheet-blue: #2e7df7;
+  --sheet-blue-ink: #1f6fe0;
+  --sheet-green: #2f8a5c;
+
+  position: relative;
+  container-type: inline-size;
+  width: 100%;
+  max-width: 680px;
+  /* one PDF point, scaled to this paper's width (A5 is 148mm wide) */
+  --pt: calc(100cqw / 148 * 0.3528);
+  padding: calc(18 * var(--pt)) calc(24 * var(--pt)) calc(14 * var(--pt));
+  background: #fff;
+  background-image:
+    repeating-linear-gradient(0deg, var(--sheet-grid) 0 1px, transparent 1px calc(34 * var(--pt))),
+    repeating-linear-gradient(90deg, var(--sheet-grid) 0 1px, transparent 1px calc(34 * var(--pt)));
+  color: var(--sheet-ink);
+  font-family: var(--f-sheet, 'Inter'), -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: max(11px, calc(7.6 * var(--pt)));
+  line-height: 1.3;
+  letter-spacing: -0.006em;
+  font-feature-settings: 'tnum' 1;
+  box-shadow: var(--shadow-lift);
+  transform: rotate(-0.35deg);
+}
+
+.a5 p {
+  margin: 0;
+  max-width: none;
+}
+
+.a5 svg {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* ---------- Header ------------------------------------- */
+
+.a5 .kicker {
+  display: flex;
+  align-items: center;
+  gap: calc(4 * var(--pt));
+  margin: 0 0 calc(4 * var(--pt));
+  font-size: max(9px, calc(5.9 * var(--pt)));
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sheet-dim);
+}
+
+.a5 .kdot {
+  width: calc(3.6 * var(--pt));
+  height: calc(3.6 * var(--pt));
+  min-width: 5px;
+  min-height: 5px;
+  border-radius: 50%;
+  background: var(--sheet-blue);
+}
+
+.a5 .kdot.live {
+  animation: day-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes day-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(46, 125, 247, 0.45); }
+  50% { box-shadow: 0 0 0 calc(3 * var(--pt)) rgba(46, 125, 247, 0); }
+}
+
+.a5 .ttl {
+  margin: 0 0 calc(3 * var(--pt));
+  font-size: max(24px, calc(19 * var(--pt)));
+  line-height: 0.95;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  color: var(--sheet-ink);
+}
+
+.a5 .sub {
+  margin: 0 0 calc(5 * var(--pt));
+  font-size: max(10.5px, calc(7.5 * var(--pt)));
+  font-weight: 600;
+  color: var(--sheet-mute);
+}
+
+/* ---------- NOW ---------------------------------------- */
+
+.a5 .now {
+  position: relative;
+  margin-bottom: calc(5 * var(--pt));
+  padding: calc(4 * var(--pt)) calc(9 * var(--pt)) calc(6 * var(--pt));
+  background: #fff;
+  border: 0.7pt solid var(--sheet-line);
+  border-left: calc(1.8 * var(--pt)) solid var(--sheet-blue);
+  border-radius: calc(8 * var(--pt));
+  overflow: hidden;
+}
+
+.a5 .now.deep { border-left-color: var(--sheet-green); }
+.a5 .now.rest { border-left-color: var(--sheet-dim); }
+.a5 .now.work { border-left-color: var(--sheet-ink); }
+
+.a5 .now-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: calc(6 * var(--pt));
+  margin-bottom: calc(2.5 * var(--pt));
+}
+
+.a5 .now-body {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0 calc(8 * var(--pt));
+  align-items: end;
+}
+
+.a5 .now-l {
+  display: flex;
+  flex-direction: column;
+  gap: calc(1.5 * var(--pt));
+  min-width: 0;
+}
+
+.a5 .now-k {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(4 * var(--pt));
+  font-size: max(9px, calc(5.9 * var(--pt)));
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--sheet-blue-ink);
+  font-feature-settings: 'tnum' 1;
+}
+
+.a5 .now-fri {
+  padding: 0 calc(3 * var(--pt));
+  border: 0.7pt solid var(--sheet-line);
+  border-radius: 999px;
+  color: var(--sheet-dim);
+  letter-spacing: 0.1em;
+}
+
+.a5 .now-day {
+  font-size: max(9px, calc(5.9 * var(--pt)));
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sheet-dim);
+  white-space: nowrap;
+}
+
+.a5 .now-t {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(4 * var(--pt));
+  font-size: max(15px, calc(11.5 * var(--pt)));
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--sheet-ink);
+}
+
+.a5 .now.pray .now-t { color: var(--sheet-blue-ink); letter-spacing: 0.04em; }
+
+.a5 .now-i {
+  width: calc(11 * var(--pt));
+  height: calc(11 * var(--pt));
+  min-width: 14px;
+  min-height: 14px;
+  color: var(--sheet-mute);
+}
+
+.a5 .now.deep .now-i { color: var(--sheet-green); }
+.a5 .now.pray .now-i { color: var(--sheet-blue); }
+
+.a5 .now-n {
+  font-size: max(10.5px, calc(6.8 * var(--pt)));
+  font-weight: 500;
+  color: var(--sheet-dim);
+}
+
+.a5 .now-r {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.a5 .now-r b {
+  font-size: max(18px, calc(15 * var(--pt)));
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--sheet-ink);
+}
+
+.a5 .now.deep .now-r b { color: var(--sheet-green); }
+.a5 .now.pray .now-r b { color: var(--sheet-blue-ink); }
+
+.a5 .now-r span {
+  font-size: max(9.5px, calc(6.2 * var(--pt)));
+  font-weight: 600;
+  color: var(--sheet-dim);
+}
+
+.a5 .now-next {
+  margin-top: calc(1.5 * var(--pt));
+  font-weight: 700 !important;
+  color: var(--sheet-mute) !important;
+}
+
+.a5 .now-bar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: calc(1.6 * var(--pt));
+  min-height: 2px;
+  background: var(--sheet-blue);
+  transition: width 1s linear;
+}
+
+.a5 .now.deep .now-bar { background: var(--sheet-green); }
+
+.a5 .now.is-wait .now-t { color: var(--sheet-dim); }
+
+/* ---------- Budget ------------------------------------- */
+
+.a5 .budget {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: calc(3 * var(--pt));
+  margin-bottom: calc(5 * var(--pt));
+}
+
+.a5 .bg {
+  padding: calc(3.4 * var(--pt)) calc(4 * var(--pt));
+  text-align: center;
+  color: var(--sheet-mute);
+  background: #fff;
+  border: 0.7pt solid var(--sheet-line);
+  border-radius: calc(6 * var(--pt));
+}
+
+.a5 .bg svg {
+  width: calc(9.6 * var(--pt));
+  height: calc(9.6 * var(--pt));
+  min-width: 13px;
+  min-height: 13px;
+}
+
+.a5 .bg span {
+  display: block;
+  margin: calc(2 * var(--pt)) 0 calc(1 * var(--pt));
+  font-size: max(8px, calc(5.6 * var(--pt)));
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sheet-dim);
+}
+
+.a5 .bg b {
+  font-size: max(12px, calc(9 * var(--pt)));
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--sheet-ink);
+}
+
+/* ---------- The sheet (rows) ---------------------------- */
+
+.a5 .sheet {
+  margin-bottom: calc(4 * var(--pt));
+  padding: calc(2 * var(--pt)) calc(9 * var(--pt));
+  background: #fff;
+  border: 0.7pt solid var(--sheet-line);
+  border-radius: calc(8 * var(--pt));
+}
+
+.a5 .hd {
+  display: flex;
+  align-items: baseline;
+  gap: calc(5 * var(--pt));
+  padding: calc(3 * var(--pt)) 0 calc(2 * var(--pt));
+  border-bottom: 0.5pt solid var(--sheet-hair);
+}
+
+.a5 .hd span {
+  font-size: max(9px, calc(6.2 * var(--pt)));
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: var(--sheet-ink);
+}
+
+.a5 .hd i {
+  font-style: normal;
+  font-size: max(9px, calc(6.2 * var(--pt)));
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--sheet-dim-2);
+}
+
+.a5 .r {
+  position: relative;
+  display: grid;
+  grid-template-columns: calc(37 * var(--pt)) calc(17 * var(--pt)) 1fr calc(37 * var(--pt));
+  gap: 0 calc(4 * var(--pt));
+  align-items: center;
+  padding: calc(1.3 * var(--pt)) 0;
+  border-bottom: 0.5pt solid var(--sheet-hair);
+  transition: background 0.3s ease, opacity 0.3s ease;
+}
+
+.a5 .r:last-child { border-bottom: 0; }
+
+.a5 .r .t {
+  font-size: max(11.5px, calc(8.1 * var(--pt)));
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--sheet-ink);
+}
+
+.a5 .r .i { color: var(--sheet-dim-2); line-height: 0; }
+
+.a5 .r .i svg {
+  width: calc(11 * var(--pt));
+  height: calc(11 * var(--pt));
+  min-width: 14px;
+  min-height: 14px;
+}
+
+.a5 .r .b { min-width: 0; }
+
+.a5 .r .b b {
+  font-size: max(11.5px, calc(8.1 * var(--pt)));
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.a5 .r .b em {
+  margin-left: calc(5 * var(--pt));
+  font-style: normal;
+  font-size: max(10px, calc(6.6 * var(--pt)));
+  font-weight: 500;
+  color: var(--sheet-dim);
+}
+
+.a5 .r .d {
+  font-size: max(10px, calc(7 * var(--pt)));
+  font-weight: 800;
+  text-align: right;
+  color: var(--sheet-dim);
+  white-space: nowrap;
+}
+
+.a5 .r.pray .t,
+.a5 .r.pray .b b { color: var(--sheet-blue-ink); }
+.a5 .r.pray .i { color: var(--sheet-blue); }
+.a5 .r.pray .b b { letter-spacing: 0.06em; }
+
+.a5 .r.deep .b b { color: var(--sheet-ink); }
+.a5 .r.deep .i,
+.a5 .r.deep .d { color: var(--sheet-green); }
+
+.a5 .r.rest .t,
+.a5 .r.rest .b b { color: #79818b; font-weight: 700; }
+.a5 .r.rest .b b { font-size: max(11.5px, calc(8 * var(--pt))); }
+
+.a5 .r.work .i { color: var(--sheet-mute); }
+
+/* Done for today. */
+.a5 .r.is-past { opacity: 0.5; }
+
+/* The live row. */
+.a5 .r.is-now {
+  opacity: 1;
+  margin: calc(1 * var(--pt)) calc(-5 * var(--pt));
+  padding: calc(3 * var(--pt)) calc(5 * var(--pt)) calc(3.6 * var(--pt));
+  background: #f3f7ff;
+  border-bottom: 0;
+  border-radius: calc(5 * var(--pt));
+  box-shadow: inset 0 0 0 0.7pt rgba(46, 125, 247, 0.35);
+  z-index: 1;
+}
+
+.a5 .r.is-now.deep {
+  background: #f1faf5;
+  box-shadow: inset 0 0 0 0.7pt rgba(47, 138, 92, 0.35);
+}
+
+.a5 .r.is-now .d { color: var(--sheet-blue-ink); }
+.a5 .r.is-now.deep .d { color: var(--sheet-green); }
+
+/* progress along the row — the track stops before the duration column */
+.a5 .r .track {
+  position: absolute;
+  inset: 0 calc(41 * var(--pt)) 0 0;
+  pointer-events: none;
+}
+
+.a5 .r .bar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: calc(1.6 * var(--pt));
+  min-height: 2px;
+  background: var(--sheet-blue);
+  border-radius: 0 999px 999px 0;
+  transition: width 1s linear;
+}
+
+.a5 .r.deep .bar { background: var(--sheet-green); }
+
+/* the cursor: a line for "now", with the clock hanging off it */
+.a5 .r .cursor {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 1px solid var(--sheet-blue);
+  opacity: 0.85;
+  transition: left 1s linear;
+  pointer-events: none;
+}
+
+.a5 .r.deep .cursor { border-left-color: var(--sheet-green); }
+
+.a5 .r .cursor i {
+  position: absolute;
+  top: calc(-1 * var(--pt));
+  left: calc(2 * var(--pt));
+  padding: 0 calc(2.5 * var(--pt));
+  font-style: normal;
+  font-size: max(8.5px, calc(5.4 * var(--pt)));
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  line-height: 1.4;
+  color: #fff;
+  background: var(--sheet-blue);
+  border-radius: calc(2 * var(--pt));
+  font-feature-settings: 'tnum' 1;
+  white-space: nowrap;
+}
+
+.a5 .r.deep .cursor i { background: var(--sheet-green); }
+
+/* Clock flips to the left side when the cursor nears the right edge. */
+.a5 .r .cursor.flip i {
+  left: auto;
+  right: calc(2 * var(--pt));
+}
+
+.a5 .r.is-marker .b b { color: var(--sheet-blue-ink); }
+
+/* ---------- Rules + foot -------------------------------- */
+
+.a5 .rules {
+  padding: calc(4 * var(--pt)) calc(9 * var(--pt));
+  background: #fff;
+  border: 0.7pt solid var(--sheet-line);
+  border-left: calc(1.8 * var(--pt)) solid var(--sheet-ink);
+  border-radius: calc(6 * var(--pt));
+}
+
+.a5 .rule {
+  padding: calc(1.5 * var(--pt)) 0;
+  font-size: max(10px, calc(6.7 * var(--pt)));
+  line-height: 1.28;
+  color: #79818b;
+  border-bottom: 0.5pt solid var(--sheet-hair);
+}
+
+.a5 .rule:last-child { border-bottom: 0; }
+
+.a5 .rule b {
+  font-size: max(10.5px, calc(7.2 * var(--pt)));
+  font-weight: 800;
+  color: var(--sheet-ink);
+}
+
+.a5 .foot {
+  margin-top: calc(3 * var(--pt));
+  font-size: max(9px, calc(5.8 * var(--pt)));
+  line-height: 1.35;
+  color: #aab1b9;
+}
+
+.a5 .foot b { font-weight: 800; }
+
+/* ---------- Gate + lock -------------------------------- */
+
+.day-gate {
+  position: relative;
+  max-width: 30rem;
+  margin-top: 2rem;
+  padding: 1.6rem 1.5rem 1.3rem;
+  background: var(--note-white);
+  border: 1px solid rgba(27, 26, 23, 0.14);
+  box-shadow: var(--shadow-lift);
+  transform: rotate(-0.5deg);
+}
+
+.day-lock {
+  margin: 0.3rem 0 3rem;
+  text-align: center;
+}
+
+.day-lock button {
+  padding: 0;
+  font-family: var(--f-note), cursive;
+  font-size: 0.95rem;
+  color: var(--pencil);
+  background: none;
+  border: 0;
+  border-bottom: 1px dashed rgba(27, 26, 23, 0.35);
+  cursor: pointer;
+}
+
+.day-lock button:hover { color: var(--thread-dark); border-bottom-color: var(--thread); }
+
+/* ---------- Small screens ------------------------------- */
+
+@media (max-width: 560px) {
+  .a5 { transform: none; }
+  .a5 .budget { grid-template-columns: repeat(3, 1fr); }
+  .a5 .r { grid-template-columns: auto auto 1fr auto; gap: 0 0.5rem; padding-block: 0.28rem; }
+  .a5 .r .b em { display: block; margin-left: 0; }
+  .a5 .r .track { right: 3.4rem; }
+  .a5 .now-body { grid-template-columns: 1fr; }
+  .a5 .now-r { align-items: flex-start; text-align: left; margin-top: 0.35rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .a5 .kdot.live { animation: none; }
+  .a5 .r .bar,
+  .a5 .r .cursor,
+  .a5 .now-bar { transition: none; }
+}
