@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Reveal from '../Reveal';
 import Footer from '../components/Footer';
 import SiteNav from '../components/SiteNav';
 import SubscribeForm from '../components/SubscribeForm';
@@ -22,6 +23,7 @@ export default async function NewsletterPage() {
 
   return (
     <main>
+      <Reveal />
       <SiteNav current="/newsletter" />
 
       <section className="page-head">

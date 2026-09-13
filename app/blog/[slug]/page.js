@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import Reveal from '../../Reveal';
 import Footer from '../../components/Footer';
 import PostCard from '../../components/PostCard';
 import Prose from '../../components/Prose';
@@ -39,6 +40,7 @@ export default async function PostPage({ params }) {
 
   return (
     <main>
+      <Reveal />
       <SiteNav current="/blog" />
 
       <article className="page-head">

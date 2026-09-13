@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import Reveal from '../../Reveal';
 import Footer from '../../components/Footer';
 import SiteNav from '../../components/SiteNav';
 import SubscribeForm from '../../components/SubscribeForm';
@@ -32,6 +33,7 @@ export default async function IssuePage({ params }) {
 
   return (
     <main>
+      <Reveal />
       <SiteNav current="/newsletter" />
 
       <article className="page-head">

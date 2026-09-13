@@ -1,5 +1,6 @@
 import { Inter } from 'next/font/google';
 import SiteNav from '../components/SiteNav';
+import Reveal from '../Reveal';
 import IdealDay from './IdealDay';
 import { lock, unlock } from './actions';
 import { isUnlocked } from '../../lib/dayAuth';
@@ -66,6 +67,7 @@ export default async function DayPage({ searchParams }) {
 
   return (
     <main>
+      <Reveal />
       <SiteNav current="/day" />
       {open ? (
         <>

@@ -117,6 +117,25 @@
   color: var(--sheet-mute);
 }
 
+.a5 .anchors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(2 * var(--pt)) calc(7 * var(--pt));
+  margin: calc(-2 * var(--pt)) 0 calc(5 * var(--pt));
+  font-size: max(9px, calc(6 * var(--pt)));
+  font-weight: 700;
+  color: var(--sheet-blue-ink);
+  font-feature-settings: 'tnum' 1;
+}
+
+.a5 .anchors b {
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sheet-dim);
+  margin-right: calc(2 * var(--pt));
+}
+
 /* ---------- NOW ---------------------------------------- */
 
 .a5 .now {

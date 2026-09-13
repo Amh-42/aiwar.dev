@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { ICONS } from '../../lib/idealDayIcons';
-import { BUDGET, FOOT, RULES, fmtDur, fmtEnd, shape } from '../../lib/idealDay';
+import { FOOT, PLACE, RULES, fmtDur, hhmm, pad, shape, toAddis } from '../../lib/idealDay';
 
 function Icon({ name, className }) {
   return (
@@ -10,10 +10,6 @@ function Icon({ name, className }) {
       <path d={ICONS[name]} />
     </svg>
   );
-}
-
-function pad(n) {
-  return String(n).padStart(2, '0');
 }
 
 function fmtClock(d) {
@@ -51,13 +47,14 @@ function Row({ b, active, past, progress, left, now }) {
 /**
  * The sheet. Server-rendered as the printed A5 (static, no time), then the
  * client takes over and lays the "now" indicator on it, ticking every 15s.
- * Local device time — the day follows the person, not a fixed city.
+ * Runs on Addis Ababa wall-clock wherever it is opened, because the prayer
+ * anchors are Addis prayers.
  */
 export default function IdealDay() {
   const [now, setNow] = useState(null);
 
   useEffect(() => {
-    const tick = () => setNow(new Date());
+    const tick = () => setNow(toAddis(new Date()));
     tick();
     const id = window.setInterval(tick, 15000);
     const onVis = () => document.visibilityState === 'visible' && tick();
@@ -68,11 +65,11 @@ export default function IdealDay() {
     };
   }, []);
 
-  const s = shape(now || new Date(2000, 0, 1, 12, 0)); // placeholder shape until mounted
+  const s = shape(now || toAddis(new Date())); // server: today's shape, no cursor
   const live = Boolean(now);
   const clock = live ? fmtClock(now) : '––:––';
   const a = live ? s.active : null;
-  const isActive = (b) => live && a && a.t === b.t && a.title === b.title && !b.marker;
+  const isActive = (b) => live && a && a.s === b.s && a.title === b.title && !b.marker;
   const isPast = (b) => live && s.isPast(b);
 
   const dayLabel = live
@@ -89,7 +86,16 @@ export default function IdealDay() {
           The System · Operating Standard
         </p>
         <h2 className="ttl">The Ideal Day</h2>
-        <p className="sub">Maghrib to Maghrib · anchored on the five prayers · 6h 30m in bed · identical every day</p>
+        <p className="sub">
+          Maghrib to Maghrib · anchored on the five prayers · {fmtDur(s.evening[6].mins)} in bed · identical every day
+        </p>
+        <p className="anchors">
+          {['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].map((k) => (
+            <span key={k}>
+              <b>{k}</b> {hhmm(s.prayers[k])}
+            </span>
+          ))}
+        </p>
 
         {/* NOW — the one thing the paper cannot do */}
         <div className={`now ${a ? a.kind : 'gap'} ${live ? '' : 'is-wait'}`} role="status" aria-live="polite">
@@ -97,6 +103,7 @@ export default function IdealDay() {
             <span className="now-k">
               <span className="kdot live" />
               Now · {clock}
+              <span className="now-fri">{PLACE.name}</span>
               {s.friday && live ? <span className="now-fri">Friday</span> : null}
             </span>
             <span className="now-day">{dayLabel}</span>
@@ -127,7 +134,7 @@ export default function IdealDay() {
                 <>
                   <b>{fmtDur(s.left)}</b>
                   <span>
-                    left · {a.t}–{fmtEnd(a.t, a.mins)}
+                    left · {a.t}–{hhmm(a.s + a.mins)}
                   </span>
                 </>
               ) : live ? (
@@ -149,11 +156,11 @@ export default function IdealDay() {
         </div>
 
         <div className="budget">
-          {BUDGET.map((x) => (
+          {s.budget.map((x) => (
             <div className="bg" key={x.label}>
               <Icon name={x.icon} />
               <span>{x.label}</span>
-              <b>{x.hours}</b>
+              <b>{fmtDur(x.mins)}</b>
             </div>
           ))}
         </div>
@@ -168,7 +175,7 @@ export default function IdealDay() {
           ))}
           <div className="hd">
             <span>FAJR → MAGHRIB</span>
-            <i>the work{s.friday && live ? " · Friday: Jumu'ah, deep 2 at 14:30" : ''}</i>
+            <i>the work{s.friday ? " · Friday: Jumu'ah, deep 2 after it" : ''}</i>
           </div>
           {s.morning.map((b) => (
             <Row key={b.t + b.title + (b.marker ? 'x' : '')} b={b} active={isActive(b)} past={isPast(b)} progress={s.progress} left={s.left} now={clock} />

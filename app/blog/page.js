@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Reveal from '../Reveal';
 import Footer from '../components/Footer';
 import PostCard from '../components/PostCard';
 import SearchInput from '../components/SearchInput';
@@ -60,6 +61,7 @@ export default async function BlogPage({ searchParams }) {
 
   return (
     <main>
+      <Reveal />
       <SiteNav current="/blog" />
 
       <section className="page-head">

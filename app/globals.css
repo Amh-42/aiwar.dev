@@ -670,6 +670,20 @@ footer {
   transform: none;
 }
 
+/* Belt and braces without JS: whatever happens to the observer, nothing
+   stays hidden for more than ~1.5s. The animation only fills forwards, so a
+   .rise that got .in earlier is unaffected. */
+.rise:not(.in) {
+  animation: rise-fallback 0.6s ease 1.5s forwards;
+}
+
+@keyframes rise-fallback {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 .board .note.rise.in:nth-child(odd) { transform: rotate(-1.4deg); }
 .board .note.rise.in:nth-child(even) { transform: rotate(1.1deg); }
 .board .note.rise.in:nth-child(3n) { transform: rotate(0.6deg); }
